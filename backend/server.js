@@ -14,7 +14,7 @@ require('dotenv').config();
 
 // Import custom modules
 const Ledger = require('./ledger');
-const GitHubSync = require('./githubSync');
+const GitHubAPI = require('./githubAPI');
 const BybitAssets = require('./bybitAssets');
 
 const app = express();
@@ -51,7 +51,7 @@ async function reloadDatabase(dbFile) {
     
     db = newDb;
     ledger = new Ledger(db);
-    githubSync = new GitHubSync(db, ledger);
+    githubSync = new GitHubAPI(db);
     bybitAssets = new BybitAssets(db);
     
     console.log('✅ Database reloaded successfully');
