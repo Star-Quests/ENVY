@@ -200,7 +200,7 @@ class InterfaceManager {
 // ==================== ENVY MAIN CLASS ====================
 class ENVY {
   constructor() {
-    this.apiBase = 'http://localhost:3001/api';
+    this.apiBase = '/api';
     this.currentPage = 'dashboard';
     this.selectedAsset = 'BTC';
     this.prices = {};
