@@ -24,13 +24,21 @@ console.log(`🚀 Starting server on port: ${PORT}`);
 // ==================== MIDDLEWARE ====================
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
+
+// Serve static assets (logos, icons, etc.)
 app.use('/assets', express.static(path.join(__dirname, '../frontend/assets')));
 
-// Serve static files with absolute paths
-app.use('/assets', express.static(path.join(__dirname, '../frontend/assets')));
+// ==================== SERVE FRONTEND ====================
+// Serve the main frontend files (HTML, CSS, JS)
+app.use(express.static(path.join(__dirname, '../frontend')));
 
-// Also serve from root as fallback
-app.use('/assets', express.static(path.join(process.cwd(), 'frontend/assets')));
+// For any route not matching an API endpoint, serve index.html
+app.get('*', (req, res) => {
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(__dirname, '../frontend/index.html'));
+  }
+});
+// ==================== END OF NEW BLOCK ====================
 
 // ==================== DATABASE SETUP ====================
 let db;
@@ -947,21 +955,6 @@ app.post('/api/format', async (req, res) => {
   }
 });
 
-// ==================== SERVE FRONTEND (Add this block) ====================
-
-
-// Serve static files from the frontend directory
-app.use(express.static(path.join(__dirname, '../frontend')));
-
-// For any route not matching an API endpoint, serve the index.html file
-// This is crucial for single-page applications like yours
-app.get('*', (req, res) => {
-  // Don't serve index.html for API routes
-  if (!req.path.startsWith('/api')) {
-    res.sendFile(path.join(__dirname, '../frontend/index.html'));
-  }
-});
-// ==================== END OF NEW BLOCK ====================
 
 // ==================== START SERVER ====================
 
