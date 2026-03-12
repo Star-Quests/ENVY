@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": 1773337621178,
+  "timestamp": 1773337992706,
   "tables": {
     "transactions": {
       "columns": [
@@ -158,7 +158,7 @@
         ],
         [
           "BNB",
-          1,
+          0,
           "BNB",
           "/assets/logos/BNB.png",
           null
@@ -179,7 +179,7 @@
         ],
         [
           "DOT",
-          1,
+          0,
           "DOT",
           "/assets/logos/DOT.png",
           1773154998941
@@ -200,7 +200,7 @@
         ],
         [
           "DOGE",
-          1,
+          0,
           "DOGE",
           "/assets/logos/DOGE.png",
           1773155000795
@@ -228,7 +228,7 @@
         ],
         [
           "DYDX",
-          1,
+          0,
           "DYDX",
           "/assets/logos/DYDX.png",
           1773155001460
@@ -312,7 +312,7 @@
         ],
         [
           "BCH",
-          1,
+          0,
           "BCH",
           "/assets/logos/BCH.png",
           1773155009404
@@ -403,7 +403,7 @@
         ],
         [
           "SHIB",
-          1,
+          0,
           "SHIB",
           "/assets/logos/SHIB.png",
           1773155014314
@@ -438,7 +438,7 @@
         ],
         [
           "AVAX",
-          1,
+          0,
           "AVAX",
           "/assets/logos/AVAX.png",
           1773155014734
@@ -3444,12 +3444,12 @@
         [
           "github_token",
           "[MASKED]",
-          1773337525018
+          1773337987401
         ],
         [
           "github_repo",
           "Star-Quests/ENVY",
-          1773337525019
+          1773337987403
         ],
         [
           "last_sync_time",
