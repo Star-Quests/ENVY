@@ -573,11 +573,14 @@ class ENVY {
   }
   
   async fetchPrices() {
+    console.log('💰 Fetching prices...');
     try {
       const response = await fetch(`${this.apiBase}/prices`);
       if (!response.ok) throw new Error('Failed to fetch prices');
       
       const data = await response.json();
+      console.log('💰 Price data received:', data);
+      
       this.prices = data.prices || {};
       this.lastUpdateTime = data.lastUpdate || Date.now();
       
@@ -1423,26 +1426,34 @@ closeModal() {
   }
 
   async checkStatus() {
+  console.log('🔍 Checking server health...');
+  
   try {
     const response = await fetch(`${this.apiBase}/health`);
+    console.log('📡 Health response status:', response.status);
+    
     const data = await response.json();
+    console.log('📡 Health data:', data);
     
     if (response.ok) {
-      // Log the actual status from server for debugging
-      console.log('📡 Server connection status:', data.connection);
+      console.log('✅ Server reports connection:', data.connection);
       
-      // Use the server's connection status - this will show "connected"!
-      this.updateConnectionStatus(data.connection || 'connected');
+      // FORCE the status to show what server says
+      this.connectionStatus = data.connection || 'connected';
       
-      // Also update last update time if available
-      if (data.lastUpdate) {
-        this.lastUpdateTime = data.lastUpdate;
+      if (this.statusDot) {
+        this.statusDot.className = 'status-dot ' + this.connectionStatus;
+        this.statusText.textContent = this.connectionStatus === 'connected' ? 'Connected' : 
+                                     this.connectionStatus === 'connecting' ? 'Connecting...' : 'Disconnected';
       }
+      
+      console.log('🟢 Status UI updated to:', this.connectionStatus);
     } else {
+      console.log('❌ Health check failed with status:', response.status);
       this.updateConnectionStatus('disconnected');
     }
   } catch (error) {
-    console.error('Health check failed:', error);
+    console.error('❌ Health check error:', error);
     this.updateConnectionStatus('disconnected');
   }
 }
