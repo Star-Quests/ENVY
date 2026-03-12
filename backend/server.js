@@ -21,6 +21,35 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 console.log(`🚀 Starting server on port: ${PORT}`);
 
+// ==================== TEST BYBIT CONNECTION ====================
+const https = require('https');
+console.log('🔍 Testing Bybit API connection...');
+https.get('https://api.bybit.com/v5/market/time', (resp) => {
+  let data = '';
+  resp.on('data', chunk => data += chunk);
+  resp.on('end', () => {
+    try {
+      const result = JSON.parse(data);
+      console.log('✅ Bybit API reachable:', result);
+    } catch (e) {
+      console.log('❌ Bybit API error:', e.message);
+    }
+  });
+}).on('error', (err) => {
+  console.log('❌ Cannot reach Bybit API:', err.message);
+});
+
+// Test WebSocket connection
+const testWs = new WebSocket('wss://stream.bybit.com/v5/public/spot');
+testWs.on('open', () => {
+  console.log('✅ WebSocket connection test successful');
+  testWs.close();
+});
+testWs.on('error', (err) => {
+  console.log('❌ WebSocket connection test failed:', err.message);
+});
+// ==================== END TEST ====================
+
 // ==================== MIDDLEWARE ====================
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
@@ -271,56 +300,66 @@ class BybitWebSocket {
   }
   
   connect() {
-    this.connectionStatus = 'connecting';
+  this.connectionStatus = 'connecting';
+  this.notifyStatusListeners();
+  
+  this.ws = new WebSocket('wss://stream.bybit.com/v5/public/spot');
+  
+  this.ws.on('open', () => {
+    console.log('🔌 Bybit WebSocket connected');
+    this.connectionStatus = 'connected';
+    this.reconnectAttempts = 0;
+    this.reconnectDelay = 1000;
+    this.lastUpdateTime = Date.now();
     this.notifyStatusListeners();
     
-    this.ws = new WebSocket('wss://stream.bybit.com/v5/public/spot');
-    
-    this.ws.on('open', () => {
-      console.log('🔌 Bybit WebSocket connected');
-      this.connectionStatus = 'connected';
-      this.reconnectAttempts = 0;
-      this.reconnectDelay = 1000;
-      this.lastUpdateTime = Date.now();
-      this.notifyStatusListeners();
-      
-      this.pingInterval = setInterval(() => {
-        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-          this.ws.send(JSON.stringify({ op: 'ping' }));
-        }
-      }, 20000);
-      
-      if (this.subscriptions.size > 0) {
-        this.subscribe([...this.subscriptions]);
+    // CRITICAL FIX: Send ping every 15 seconds to keep connection alive
+    this.pingInterval = setInterval(() => {
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        const pingMsg = JSON.stringify({ op: 'ping' });
+        this.ws.send(pingMsg);
+        console.log('📤 Ping sent to Bybit'); // Optional: remove in production
       }
-    });
+    }, 15000); // 15 seconds (Bybit requires < 20 seconds)
     
-    this.ws.on('message', (data) => {
-      try {
-        const message = JSON.parse(data);
-        this.handleMessage(message);
-      } catch (error) {
-        console.error('Error parsing message:', error);
-      }
-    });
-    
-    this.ws.on('close', () => {
-      console.log('🔌 WebSocket disconnected');
-      this.connectionStatus = 'disconnected';
-      this.notifyStatusListeners();
+    if (this.subscriptions.size > 0) {
+      this.subscribe([...this.subscriptions]);
+    }
+  });
+  
+  this.ws.on('message', (data) => {
+    try {
+      const message = JSON.parse(data);
       
-      if (this.pingInterval) {
-        clearInterval(this.pingInterval);
-        this.pingInterval = null;
+      // Handle pong responses
+      if (message.op === 'pong') {
+        console.log('📥 Pong received from Bybit'); // Optional: remove in production
+        return;
       }
       
-      this.reconnect();
-    });
+      this.handleMessage(message);
+    } catch (error) {
+      console.error('Error parsing message:', error);
+    }
+  });
+  
+  this.ws.on('close', (code, reason) => {
+    console.log(`🔌 WebSocket disconnected (code: ${code}, reason: ${reason})`);
+    this.connectionStatus = 'disconnected';
+    this.notifyStatusListeners();
     
-    this.ws.on('error', (error) => {
-      console.error('WebSocket error:', error.message);
-    });
-  }
+    if (this.pingInterval) {
+      clearInterval(this.pingInterval);
+      this.pingInterval = null;
+    }
+    
+    this.reconnect();
+  });
+  
+  this.ws.on('error', (error) => {
+    console.error('WebSocket error:', error.message);
+  });
+}
   
   handleMessage(message) {
     if (message.op === 'pong') return;
