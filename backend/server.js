@@ -179,6 +179,28 @@ async function initDatabase() {
   }
 }
 
+// ==================== DATABASE HELPER ====================
+// Add connection timeout and retry logic
+const QUERY_TIMEOUT = 5000; // 5 seconds
+
+// Helper function for safe queries
+async function safeQuery(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error('Query timeout after ' + QUERY_TIMEOUT + 'ms'));
+    }, QUERY_TIMEOUT);
+    
+    try {
+      const result = db.exec(sql, params);
+      clearTimeout(timeout);
+      resolve(result);
+    } catch (error) {
+      clearTimeout(timeout);
+      reject(error);
+    }
+  });
+}
+
 async function createTables() {
   db.run(`
     CREATE TABLE transactions (
@@ -475,15 +497,20 @@ class BybitWebSocket {
 const bybitWS = new BybitWebSocket();
 bybitWS.connect();
 
-// ==================== API ROUTES ====================
-
+// ==================== HEALTH ROUTE ====================
 app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    timestamp: Date.now(),
-    connection: bybitWS.getStatus(),
-    lastUpdate: bybitWS.getLastUpdateTime()
-  });
+  console.log('📡 /api/health called');
+  try {
+    res.json({
+      status: 'ok',
+      timestamp: Date.now(),
+      connection: bybitWS.getStatus(),
+      lastUpdate: bybitWS.getLastUpdateTime()
+    });
+  } catch (error) {
+    console.error('❌ /api/health error:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 app.get('/api/assets', async (req, res) => {
@@ -509,6 +536,37 @@ app.get('/api/assets', async (req, res) => {
     
     console.log(`✅ /api/assets returning ${result.length} assets`);
     res.json(result);
+  } catch (error) {
+    console.error('❌ /api/assets error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ==================== OPTIMIZED ASSET ROUTE ====================
+app.get('/api/assets', async (req, res) => {
+  console.log('📡 /api/assets called');
+  try {
+    // Use the safeQuery helper instead of direct db.exec
+    const result = await safeQuery(`
+      SELECT symbol, enabled, display_name, logo_path 
+      FROM asset_settings 
+      ORDER BY symbol
+    `);
+    
+    const assets = [];
+    if (result[0]) {
+      const columns = result[0].columns;
+      result[0].values.forEach(row => {
+        const asset = {};
+        columns.forEach((col, i) => {
+          asset[col] = row[i];
+        });
+        assets.push(asset);
+      });
+    }
+    
+    console.log(`✅ /api/assets returning ${assets.length} assets`);
+    res.json(assets);
   } catch (error) {
     console.error('❌ /api/assets error:', error);
     res.status(500).json({ error: error.message });
