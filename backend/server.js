@@ -1000,13 +1000,10 @@ async function startServer() {
   });
 }
 
-// Enable scheduled GitHub sync (every 5 minutes) - moved to bottom
+// Disable scheduled GitHub sync on Pxxl (git not available)
 if (process.env.NODE_ENV === 'production') {
-  cron.schedule('*/5 * * * *', async () => {
-    console.log('🔄 Running scheduled GitHub sync...');
-    await githubSync.scheduledSync();
-  });
-  console.log('⏰ Scheduled GitHub sync enabled (every 5 minutes)');
+  console.log('⏰ GitHub sync is manual only on Pxxl (git not installed)');
+  // You can still use manual sync if you click the button
 } else {
   console.log('⏰ GitHub sync is manual only (development mode)');
 }
