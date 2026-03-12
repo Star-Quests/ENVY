@@ -1,0 +1,15 @@
+{
+  "name": "envy-backend",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "sql.js": "^1.8.0",
+    "bignumber.js": "^9.1.2",
+    "axios": "^1.6.2",
+    "fs-extra": "^11.2.0",
+    "uuid": "^9.0.1",
+    "simple-git": "^3.27.0",
+    "node-cron": "^3.0.3",
+    "ws": "^8.14.2"
+  }
+}

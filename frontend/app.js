@@ -1,0 +1,1600 @@
+// Add this InterfaceManager class right here - BEFORE the ENVY class
+class InterfaceManager {
+  constructor(envyInstance) {
+    console.log('InterfaceManager constructor called');
+    this.envy = envyInstance;
+    this.defaultSettings = {
+      theme: 'dark',
+      fontSize: 15,
+      density: 'comfortable',
+      fontFamily: 'Rajdhani, sans-serif',
+      transparency: 0.85,
+      animationSpeed: 'normal',
+      touchOptimize: false,
+      highContrast: false,
+      reduceMotion: false,
+      compactMode: false
+    };
+    
+    this.currentSettings = { ...this.defaultSettings };
+    console.log('About to load from storage');
+    this.loadFromStorage();
+  }
+  
+  loadFromStorage() {
+    console.log('loadFromStorage called');
+    try {
+      const saved = localStorage.getItem('envy_interface_settings');
+      console.log('Saved settings:', saved);
+      if (saved) {
+        this.currentSettings = JSON.parse(saved);
+        console.log('Loaded settings:', this.currentSettings);
+        this.applySettings();
+      } else {
+        console.log('No saved settings, applying defaults');
+        this.applySettings();
+      }
+    } catch (e) {
+      console.warn('Failed to load interface settings', e);
+    }
+  }
+  
+  saveToStorage() {
+    console.log('saveToStorage called with:', this.currentSettings);
+    try {
+      localStorage.setItem('envy_interface_settings', JSON.stringify(this.currentSettings));
+      console.log('Settings saved to localStorage');
+      return true;
+    } catch (e) {
+      console.warn('Failed to save interface settings', e);
+      return false;
+    }
+  }
+  
+  applySettings() {
+    console.log('applySettings called with:', this.currentSettings);
+    const settings = this.currentSettings;
+    
+    // Apply theme
+    console.log('Applying theme:', settings.theme);
+    document.body.classList.remove('light-theme');
+    if (settings.theme === 'light') {
+      document.body.classList.add('light-theme');
+    } else if (settings.theme === 'system') {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (!prefersDark) {
+        document.body.classList.add('light-theme');
+      }
+    }
+    
+    // Apply font size
+    console.log('Applying font size:', settings.fontSize);
+    document.documentElement.style.setProperty('--base-font-size', settings.fontSize + 'px');
+    document.body.style.fontSize = settings.fontSize + 'px';
+    
+    // Apply density
+    document.body.classList.remove('compact-mode', 'spacious-mode');
+    if (settings.density === 'compact') {
+      document.body.classList.add('compact-mode');
+    }
+    
+    // Apply font family
+    document.body.classList.remove(
+      'font-inter', 'font-segoe', 'font-sf', 'font-roboto'
+    );
+    if (settings.fontFamily.includes('Inter')) {
+      document.body.classList.add('font-inter');
+    } else if (settings.fontFamily.includes('Segoe')) {
+      document.body.classList.add('font-segoe');
+    } else if (settings.fontFamily.includes('SF Pro')) {
+      document.body.classList.add('font-sf');
+    } else if (settings.fontFamily.includes('Roboto')) {
+      document.body.classList.add('font-roboto');
+    }
+    
+    // Apply transparency
+    const panelElements = document.querySelectorAll('.panel.glass');
+    panelElements.forEach(panel => {
+      panel.style.background = `rgba(25, 27, 32, ${settings.transparency})`;
+    });
+    
+    if (settings.theme === 'light') {
+      panelElements.forEach(panel => {
+        panel.style.background = `rgba(255, 255, 255, ${settings.transparency})`;
+      });
+    }
+    
+    // Apply animation speed
+    document.body.classList.remove('animation-slow', 'animation-fast', 'animation-off');
+    if (settings.animationSpeed !== 'normal') {
+      document.body.classList.add(`animation-${settings.animationSpeed}`);
+    }
+    
+    // Apply device optimizations
+    document.body.classList.toggle('touch-optimized', settings.touchOptimize);
+    document.body.classList.toggle('high-contrast', settings.highContrast);
+    document.body.classList.toggle('reduce-motion', settings.reduceMotion);
+    
+    // Update slider values in UI
+    this.updateUIFromSettings();
+  }
+  
+  updateUIFromSettings() {
+    // Update theme radios
+    document.querySelectorAll('input[name="theme"]').forEach(radio => {
+      radio.checked = radio.value === this.currentSettings.theme;
+    });
+    
+    // Update font size slider
+    const fontSizeSlider = document.getElementById('fontSizeSlider');
+    const fontSizeValue = document.getElementById('fontSizeValue');
+    if (fontSizeSlider) {
+      fontSizeSlider.value = this.currentSettings.fontSize;
+      fontSizeValue.textContent = this.currentSettings.fontSize + 'px';
+    }
+    
+    // Update preset buttons
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.classList.remove('active');
+      if (parseInt(btn.dataset.size) === this.currentSettings.fontSize) {
+        btn.classList.add('active');
+      }
+    });
+    
+    // Update density radios
+    document.querySelectorAll('input[name="density"]').forEach(radio => {
+      radio.checked = radio.value === this.currentSettings.density;
+    });
+    
+    // Update font family select
+    const fontSelect = document.getElementById('fontFamilySelect');
+    if (fontSelect) {
+      fontSelect.value = this.currentSettings.fontFamily;
+    }
+    
+    // Update transparency slider
+    const transSlider = document.getElementById('transparencySlider');
+    const transValue = document.getElementById('transparencyValue');
+    if (transSlider) {
+      transSlider.value = this.currentSettings.transparency;
+      transValue.textContent = Math.round(this.currentSettings.transparency * 100) + '%';
+    }
+    
+    // Update animation radios
+    document.querySelectorAll('input[name="animation"]').forEach(radio => {
+      radio.checked = radio.value === this.currentSettings.animationSpeed;
+    });
+    
+    // Update checkboxes
+    const touchCheck = document.getElementById('touchOptimize');
+    if (touchCheck) touchCheck.checked = this.currentSettings.touchOptimize;
+    
+    const contrastCheck = document.getElementById('highContrast');
+    if (contrastCheck) contrastCheck.checked = this.currentSettings.highContrast;
+    
+    const motionCheck = document.getElementById('reduceMotion');
+    if (motionCheck) motionCheck.checked = this.currentSettings.reduceMotion;
+    
+    const compactCheck = document.getElementById('compactMode');
+    if (compactCheck) compactCheck.checked = this.currentSettings.compactMode;
+  }
+  
+  updateSetting(key, value) {
+    this.currentSettings[key] = value;
+    this.applySettings();
+    this.saveToStorage();
+  }
+  
+  resetToDefaults() {
+    console.log('resetToDefaults called');
+    this.currentSettings = { ...this.defaultSettings };
+    this.applySettings();
+    this.saveToStorage();
+  }
+  
+  previewSettings() {
+    this.applySettings();
+  }
+}
+
+// ==================== ENVY MAIN CLASS ====================
+class ENVY {
+  constructor() {
+    this.apiBase = 'http://localhost:3001/api';
+    this.currentPage = 'dashboard';
+    this.selectedAsset = 'BTC';
+    this.prices = {};
+    this.transactions = [];
+    this.cycles = [];
+    this.plans = [];
+    this.allAssets = [];
+    this.enabledAssets = [];
+    this.connectionStatus = 'disconnected';
+    this.currentHoldings = [];
+    this.currentPlan = null;
+    this.timerInterval = null;
+    this.activeTimer = null;
+    this.lastUpdateTime = Date.now();
+
+    this.interfaceManager = null;
+    
+    this.init();
+  }
+  
+  async init() {
+    console.log('ENVY init started');
+    this.cacheDOM();
+    this.bindEvents();
+
+    console.log('Creating InterfaceManager');
+    this.interfaceManager = new InterfaceManager(this);
+
+    await this.loadAssets();
+    this.startPriceUpdates();
+    this.startStatusChecks();
+    this.loadInitialData();
+    console.log('ENVY init completed');
+  }
+  
+  cacheDOM() {
+    // Navigation
+    this.navItems = document.querySelectorAll('.nav-item');
+    this.pages = document.querySelectorAll('.page');
+    this.pageTitle = document.getElementById('pageTitle');
+    
+    // Connection
+    this.statusDot = document.getElementById('statusDot');
+    this.statusText = document.getElementById('statusText');
+    
+    // Ticker
+    this.liveTicker = document.getElementById('liveTicker');
+    this.lastUpdateTimeEl = document.getElementById('lastUpdateTime');
+    
+    // Dashboard
+    this.livePricesGrid = document.getElementById('livePricesGrid');
+    this.totalCapital = document.getElementById('totalCapital');
+    this.currentBalance = document.getElementById('currentBalance');
+    this.totalProfit = document.getElementById('totalProfit');
+    this.totalLoss = document.getElementById('totalLoss');
+    this.winRate = document.getElementById('winRate');
+    this.holdingsList = document.getElementById('holdingsList');
+    this.recentTrades = document.getElementById('recentTrades');
+    this.priceUpdateBadge = document.getElementById('priceUpdateBadge');
+    
+    // Journal
+    this.txType = document.getElementById('tx-type');
+    this.txAmount = document.getElementById('tx-amount');
+    this.txPrice = document.getElementById('tx-price');
+    this.txFee = document.getElementById('tx-fee');
+    this.txNotes = document.getElementById('tx-notes');
+    this.addTxBtn = document.getElementById('addTransaction');
+    this.transactionsBody = document.getElementById('transactionsBody');
+    this.assetSelectWrapper = document.getElementById('assetSelectWrapper');
+    this.timerDisplay = document.getElementById('timerDisplay');
+    this.timerValue = document.getElementById('timerValue');
+    
+    // Planner
+    this.assetSelector = document.getElementById('assetSelector');
+    this.plannerEntry = document.getElementById('planner-entry');
+    this.plannerAmount = document.getElementById('planner-amount');
+    this.plannerProfit = document.getElementById('planner-profit');
+    this.plannerLoss = document.getElementById('planner-loss');
+    this.amountAsset = document.getElementById('amountAsset');
+    this.fillEntryBtn = document.getElementById('fillEntryPrice');
+    this.analyzeBtn = document.getElementById('analyzeTradeBtn');
+    this.analysisResults = document.getElementById('analysisResults');
+    this.plannerContainer = document.querySelector('.planner-container');
+    
+    // Analysis result elements
+    this.availableCapital = document.getElementById('availableCapital');
+    this.tpPrice = document.getElementById('tpPrice');
+    this.slPrice = document.getElementById('slPrice');
+    this.potentialProfit = document.getElementById('potentialProfit');
+    this.potentialLoss = document.getElementById('potentialLoss');
+    this.capitalIfWin = document.getElementById('capitalIfWin');
+    this.capitalIfLoss = document.getElementById('capitalIfLoss');
+    this.roi = document.getElementById('roi');
+    this.riskReward = document.getElementById('riskReward');
+    this.trailingActivation = document.getElementById('trailingActivation');
+    this.trailingDistance = document.getElementById('trailingDistance');
+    
+    // Settings
+    this.assetToggleList = document.getElementById('assetToggleList');
+    this.githubToken = document.getElementById('github-token');
+    this.githubRepo = document.getElementById('github-repo');
+    this.lastSyncTime = document.getElementById('lastSyncTime');
+    this.saveSettingsBtn = document.getElementById('saveSettings');
+    this.manualSyncBtn = document.getElementById('manualSync');
+    this.restoreSyncBtn = document.getElementById('restoreSync');
+    this.formatMemoryBtn = document.getElementById('formatMemoryBtn');
+    this.discoverAssetsBtn = document.getElementById('discoverAssetsBtn');
+    
+    // Modal
+    this.confirmModal = document.getElementById('confirmModal');
+    this.modalMessage = document.getElementById('modalMessage');
+    this.closeModalBtn = document.getElementById('closeModalBtn');
+    this.cancelModalBtn = document.getElementById('cancelModalBtn');
+    this.confirmModalBtn = document.getElementById('confirmModalBtn');
+
+    // Settings page new elements
+    this.themeRadios = document.querySelectorAll('input[name="theme"]');
+    this.fontSizeSlider = document.getElementById('fontSizeSlider');
+    this.fontSizeValue = document.getElementById('fontSizeValue');
+    this.densityRadios = document.querySelectorAll('input[name="density"]');
+    this.fontFamilySelect = document.getElementById('fontFamilySelect');
+    this.transparencySlider = document.getElementById('transparencySlider');
+    this.transparencyValue = document.getElementById('transparencyValue');
+    this.animationRadios = document.querySelectorAll('input[name="animation"]');
+    this.touchOptimize = document.getElementById('touchOptimize');
+    this.highContrast = document.getElementById('highContrast');
+    this.reduceMotion = document.getElementById('reduceMotion');
+    this.compactMode = document.getElementById('compactMode');
+    this.presetBtns = document.querySelectorAll('.preset-btn');
+    this.previewSettingsBtn = document.getElementById('previewSettingsBtn');
+    this.resetSettingsBtn = document.getElementById('resetSettingsBtn');
+    this.applySettingsBtn = document.getElementById('applySettingsBtn');
+  }
+  
+  bindEvents() {
+    this.navItems.forEach(item => {
+      item.addEventListener('click', (e) => this.switchPage(e));
+    });
+    
+    if (this.assetSelector) {
+      this.assetSelector.addEventListener('click', (e) => {
+        const option = e.target.closest('.asset-option');
+        if (option) this.selectAsset(option);
+      });
+    }
+    
+    if (this.fillEntryBtn) {
+      this.fillEntryBtn.addEventListener('click', () => this.fillEntryPrice());
+    }
+    
+    if (this.analyzeBtn) {
+      this.analyzeBtn.addEventListener('click', () => this.analyzeTrade());
+    }
+    
+    if (this.addTxBtn) {
+      this.addTxBtn.addEventListener('click', () => this.addTransaction());
+    }
+    
+    document.addEventListener('click', (e) => {
+      if (e.target.id === 'executePlanBtn') {
+        this.executePlan();
+      }
+    });
+    
+    if (this.transactionsBody) {
+      this.transactionsBody.addEventListener('click', (e) => {
+        const deleteBtn = e.target.closest('.delete-btn');
+        if (deleteBtn) {
+          const id = deleteBtn.dataset.id;
+          this.deleteTransaction(id);
+        }
+      });
+    }
+    
+    if (this.saveSettingsBtn) {
+      this.saveSettingsBtn.addEventListener('click', () => this.saveSettings());
+    }
+    
+    if (this.manualSyncBtn) {
+      this.manualSyncBtn.addEventListener('click', () => this.manualSync());
+    }
+    
+    if (this.restoreSyncBtn) {
+      this.restoreSyncBtn.addEventListener('click', () => this.restoreFromGitHub());
+    }
+    
+    if (this.formatMemoryBtn) {
+      this.formatMemoryBtn.addEventListener('click', () => this.confirmFormat());
+    }
+    
+    if (this.discoverAssetsBtn) {
+      this.discoverAssetsBtn.addEventListener('click', () => this.discoverAssets());
+    }
+    
+    if (this.closeModalBtn) {
+      this.closeModalBtn.addEventListener('click', () => this.closeModal());
+    }
+    
+    if (this.cancelModalBtn) {
+      this.cancelModalBtn.addEventListener('click', () => this.closeModal());
+    }
+    
+    if (this.confirmModalBtn) {
+      this.confirmModalBtn.addEventListener('click', () => this.executeFormat());
+    }
+
+    // Interface settings events
+    if (this.fontSizeSlider) {
+      this.fontSizeSlider.addEventListener('input', (e) => {
+        const value = e.target.value;
+        this.fontSizeValue.textContent = value + 'px';
+      });
+    }
+    
+    if (this.transparencySlider) {
+      this.transparencySlider.addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        this.transparencyValue.textContent = Math.round(value * 100) + '%';
+      });
+    }
+    
+    // Preset buttons
+    this.presetBtns?.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const size = parseInt(e.target.dataset.size);
+        this.fontSizeSlider.value = size;
+        this.fontSizeValue.textContent = size + 'px';
+        
+        this.presetBtns.forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+      });
+    });
+    
+    // Preview button
+    if (this.previewSettingsBtn) {
+      this.previewSettingsBtn.addEventListener('click', () => this.previewInterface());
+    }
+    
+    // Reset button
+    if (this.resetSettingsBtn) {
+      this.resetSettingsBtn.addEventListener('click', () => this.resetInterface());
+    }
+    
+    // Apply button
+    if (this.applySettingsBtn) {
+      this.applySettingsBtn.addEventListener('click', () => this.saveInterface());
+    }
+
+    // Force apply with delay
+    console.log('bindEvents completed, scheduling initial settings apply');
+    setTimeout(() => {
+      if (this.interfaceManager) {
+        console.log('Applying initial settings');
+        this.interfaceManager.applySettings();
+      } else {
+        console.error('InterfaceManager not available for initial apply');
+      }
+    }, 100);
+  }
+  
+  switchPage(e) {
+    const target = e.currentTarget;
+    const page = target.dataset.page;
+    
+    this.navItems.forEach(item => item.classList.remove('active'));
+    target.classList.add('active');
+    
+    this.pages.forEach(p => p.classList.remove('active'));
+    document.getElementById(`${page}-page`).classList.add('active');
+    
+    this.pageTitle.textContent = target.querySelector('.nav-label').textContent;
+    this.currentPage = page;
+    
+    if (page === 'dashboard') this.loadDashboardData();
+    if (page === 'journal') this.loadTransactions();
+    if (page === 'settings') this.loadSettings();
+    if (page === 'planner') this.loadPlannerData();
+  }
+  
+  async loadAssets() {
+    try {
+      const response = await fetch(`${this.apiBase}/assets`);
+      if (!response.ok) throw new Error('Failed to load assets');
+      
+      this.allAssets = await response.json();
+      this.enabledAssets = this.allAssets.filter(a => a.enabled).map(a => a.symbol);
+      
+      this.renderAssetSelector();
+      this.renderAssetToggles();
+      this.renderAssetDropdown();
+      
+      if (this.enabledAssets.length > 0) {
+        this.selectedAsset = this.enabledAssets[0];
+        this.updateAmountAsset();
+      }
+      
+    } catch (error) {
+      console.error('Error loading assets:', error);
+    }
+  }
+  
+  renderAssetSelector() {
+    if (!this.assetSelector) return;
+    
+    let html = '';
+    this.allAssets.forEach(asset => {
+      if (asset.enabled) {
+        html += `
+          <div class="asset-option ${asset.symbol === this.selectedAsset ? 'selected' : ''}" data-asset="${asset.symbol}">
+            <img src="${asset.logo_path}" alt="${asset.symbol}" onerror="this.src='/assets/logos/placeholder.svg'">
+            <span>${asset.symbol}</span>
+          </div>
+        `;
+      }
+    });
+    
+    this.assetSelector.innerHTML = html || '<div class="empty-state">No assets enabled</div>';
+  }
+  
+  renderAssetToggles() {
+    if (!this.assetToggleList) return;
+    
+    let html = '';
+    this.allAssets.forEach(asset => {
+      html += `
+        <label class="toggle-item">
+          <img src="${asset.logo_path}" alt="${asset.symbol}" onerror="this.src='/assets/logos/placeholder.svg'">
+          <input type="checkbox" value="${asset.symbol}" ${asset.enabled ? 'checked' : ''}>
+          <span>${asset.symbol}</span>
+        </label>
+      `;
+    });
+    
+    this.assetToggleList.innerHTML = html;
+  }
+  
+  renderAssetDropdown() {
+    if (!this.assetSelectWrapper) return;
+    
+    let html = '<select id="tx-asset" class="form-select">';
+    
+    this.allAssets.forEach(asset => {
+      if (asset.enabled) {
+        html += `<option value="${asset.symbol}">${asset.symbol}</option>`;
+      }
+    });
+    
+    html += '</select>';
+    this.assetSelectWrapper.innerHTML = html;
+    this.txAsset = document.getElementById('tx-asset');
+  }
+  
+  selectAsset(option) {
+    document.querySelectorAll('.asset-option').forEach(opt => opt.classList.remove('selected'));
+    option.classList.add('selected');
+    
+    this.selectedAsset = option.dataset.asset;
+    this.updateAmountAsset();
+  }
+  
+  updateAmountAsset() {
+    if (this.amountAsset) {
+      this.amountAsset.textContent = this.selectedAsset;
+    }
+  }
+  
+  startPriceUpdates() {
+    this.fetchPrices();
+    setInterval(() => this.fetchPrices(), 2000);
+  }
+  
+  async fetchPrices() {
+    try {
+      const response = await fetch(`${this.apiBase}/prices`);
+      if (!response.ok) throw new Error('Failed to fetch prices');
+      
+      const data = await response.json();
+      this.prices = data.prices || {};
+      this.lastUpdateTime = data.lastUpdate || Date.now();
+      
+      this.updateTicker();
+      this.updateLivePrices();
+      this.updateDashboardValues();
+      
+      if (this.lastUpdateTimeEl) {
+        const date = new Date(this.lastUpdateTime);
+        this.lastUpdateTimeEl.textContent = `Updated: ${date.toLocaleTimeString()}`;
+      }
+      
+    } catch (error) {
+      console.error('Error fetching prices:', error);
+    }
+  }
+  
+  updateTicker() {
+    if (!this.liveTicker) return;
+    
+    let html = '';
+    this.enabledAssets.forEach(asset => {
+      const priceData = this.prices[asset];
+      if (priceData && priceData.price) {
+        const changeClass = parseFloat(priceData.change24h) >= 0 ? 'positive' : 'negative';
+        const changePercent = (parseFloat(priceData.change24h) * 100).toFixed(2);
+        const logo = this.getAssetLogo(asset);
+        
+        html += `
+          <div class="ticker-item">
+            <img src="${logo}" alt="${asset}" class="ticker-logo" onerror="this.src='/assets/logos/placeholder.svg'">
+            <span class="ticker-symbol">${asset}</span>
+            <span class="ticker-price">$${this.formatFullPrice(priceData.price)}</span>
+            <span class="ticker-change ${changeClass}">${changePercent}%</span>
+          </div>
+        `;
+      }
+    });
+    
+    this.liveTicker.innerHTML = html || '<div class="ticker-item">Loading prices...</div>';
+  }
+  
+  updateLivePrices() {
+    if (!this.livePricesGrid) return;
+    
+    let html = '';
+    this.enabledAssets.forEach(asset => {
+      const priceData = this.prices[asset];
+      if (priceData && priceData.price) {
+        const changeClass = parseFloat(priceData.change24h) >= 0 ? 'profit' : 'loss';
+        const changePercent = (parseFloat(priceData.change24h) * 100).toFixed(2);
+        const logo = this.getAssetLogo(asset);
+        
+        html += `
+          <div class="price-card">
+            <img src="${logo}" alt="${asset}" class="price-card-logo" onerror="this.src='/assets/logos/placeholder.svg'">
+            <div class="price-card-info">
+              <div class="price-card-symbol">${asset}</div>
+              <div class="price-card-value">$${this.formatFullPrice(priceData.price)}</div>
+              <div class="price-card-change ${changeClass}">${changePercent}%</div>
+            </div>
+          </div>
+        `;
+      }
+    });
+    
+    this.livePricesGrid.innerHTML = html || '<div class="empty-state">No price data</div>';
+  }
+  
+  // ==================== PLANNER METHODS ====================
+  async fillEntryPrice() {
+    try {
+      const symbol = this.selectedAsset;
+      
+      if (this.plannerEntry) {
+        this.plannerEntry.value = 'Loading...';
+        this.plannerEntry.disabled = true;
+      }
+      
+      const response = await fetch(`${this.apiBase}/market/ticker/${symbol}`);
+      if (!response.ok) throw new Error('Failed to fetch price');
+      
+      const data = await response.json();
+      
+      if (data && data.price) {
+        this.plannerEntry.value = data.price;
+        this.plannerEntry.disabled = false;
+      } else {
+        throw new Error('No price data');
+      }
+    } catch (error) {
+      console.error('Failed to fill price:', error);
+      this.plannerEntry.value = '';
+      this.plannerEntry.disabled = false;
+      this.showError('Failed to fetch price');
+    }
+  }
+
+  analyzeTrade() {
+    const entryPrice = parseFloat(this.plannerEntry?.value) || 0;
+    const amount = parseFloat(this.plannerAmount?.value) || 0;
+    const targetProfit = parseFloat(this.plannerProfit?.value) || 0;
+    const maxLoss = parseFloat(this.plannerLoss?.value) || 0;
+    
+    if (!entryPrice || entryPrice <= 0) {
+      this.showError('Please enter a valid entry price');
+      return;
+    }
+    
+    if (!amount || amount <= 0) {
+      this.showError('Please enter the amount to trade');
+      return;
+    }
+    
+    if (!targetProfit || targetProfit <= 0) {
+      this.showError('Please enter your profit target');
+      return;
+    }
+    
+    if (!maxLoss || maxLoss <= 0) {
+      this.showError('Please enter your loss tolerance');
+      return;
+    }
+    
+    const currentPriceData = this.prices[this.selectedAsset];
+    const currentPrice = currentPriceData ? parseFloat(currentPriceData.price) : entryPrice;
+    
+    const totalCapital = amount * entryPrice;
+    const priceIncreaseNeeded = targetProfit / amount;
+    const tpPrice = entryPrice + priceIncreaseNeeded;
+    const priceDecreaseNeeded = maxLoss / amount;
+    const slPrice = entryPrice - priceDecreaseNeeded;
+    const potentialProfit = amount * priceIncreaseNeeded;
+    const potentialLoss = amount * priceDecreaseNeeded;
+    const capitalIfWin = totalCapital + potentialProfit;
+    const capitalIfLoss = totalCapital - potentialLoss;
+    const roi = (potentialProfit / totalCapital) * 100;
+    const riskReward = potentialProfit / potentialLoss;
+    const trailingActivation = tpPrice;
+    const trailingDistance = potentialProfit / 2;
+    
+    document.getElementById('availableCapital').textContent = `$${this.formatFullNumber(totalCapital)}`;
+    document.getElementById('tpPrice').textContent = `$${this.formatFullPrice(tpPrice)}`;
+    document.getElementById('slPrice').textContent = `$${this.formatFullPrice(slPrice)}`;
+    document.getElementById('potentialProfit').textContent = `$${this.formatFullNumber(potentialProfit)}`;
+    document.getElementById('potentialLoss').textContent = `$${this.formatFullNumber(potentialLoss)}`;
+    document.getElementById('capitalIfWin').textContent = `$${this.formatFullNumber(capitalIfWin)}`;
+    document.getElementById('capitalIfLoss').textContent = `$${this.formatFullNumber(capitalIfLoss)}`;
+    document.getElementById('roi').textContent = `${this.formatFullNumber(roi)}%`;
+    document.getElementById('riskReward').textContent = `1:${this.formatFullNumber(riskReward)}`;
+    document.getElementById('trailingActivation').textContent = `$${this.formatFullPrice(trailingActivation)}`;
+    document.getElementById('trailingDistance').textContent = `$${this.formatFullNumber(trailingDistance)}`;
+    
+    this.currentPlan = {
+      asset: this.selectedAsset,
+      entryPrice,
+      amount,
+      targetProfit,
+      maxLoss,
+      tpPrice,
+      slPrice,
+      totalCapital,
+      potentialProfit,
+      potentialLoss,
+      roi,
+      riskReward,
+      trailingActivation,
+      trailingDistance,
+      currentPrice
+    };
+    
+    this.analysisResults.style.display = 'block';
+  }
+
+  // ==================== JOURNAL METHODS ====================
+  async addTransaction() {
+    console.log('Add transaction clicked');
+    
+    const type = this.txType?.value || 'buy';
+    const asset = this.txAsset?.value || 'BTC';
+    const amount = parseFloat(this.txAmount?.value) || 0;
+    const price = parseFloat(this.txPrice?.value) || 0;
+    const fee = parseFloat(this.txFee?.value) || 0;
+    const notes = this.txNotes?.value || '';
+    
+    if (!amount || amount <= 0) {
+      this.showError('Please enter a valid amount');
+      return;
+    }
+    
+    if (!price || price <= 0) {
+      this.showError('Please enter a valid price');
+      return;
+    }
+    
+    if (this.addTxBtn) {
+      this.addTxBtn.disabled = true;
+      this.addTxBtn.textContent = 'Adding...';
+    }
+    
+    const transaction = { 
+      type, 
+      asset, 
+      amount: amount.toString(), 
+      price: price.toString(), 
+      fee: fee.toString(), 
+      notes 
+    };
+    
+    try {
+      console.log('Sending transaction:', transaction);
+      
+      const response = await fetch(`${this.apiBase}/transactions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(transaction)
+      });
+      
+      const data = await response.json();
+      console.log('Response:', data);
+      
+      if (data.success) {
+        this.txAmount.value = '';
+        this.txPrice.value = '';
+        this.txFee.value = '';
+        this.txNotes.value = '';
+        
+        if (type === 'sell') {
+          this.stopTimer();
+        } else if (type === 'buy') {
+          this.startTimer(asset);
+        }
+        
+        await this.loadTransactions();
+        await this.loadDashboardData();
+        
+        this.showSuccess('Transaction added successfully');
+      } else {
+        throw new Error(data.error || 'Failed to add transaction');
+      }
+    } catch (error) {
+      console.error('Error adding transaction:', error);
+      this.showError('Failed to add transaction: ' + error.message);
+    } finally {
+      if (this.addTxBtn) {
+        this.addTxBtn.disabled = false;
+        this.addTxBtn.textContent = 'Add Transaction';
+      }
+    }
+  }
+
+  async deleteTransaction(id) {
+    if (!confirm('Delete this transaction?')) return;
+    
+    try {
+      const response = await fetch(`${this.apiBase}/transactions/${id}`, {
+        method: 'DELETE'
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        await this.loadTransactions();
+        await this.loadDashboardData();
+        this.showSuccess('Transaction deleted');
+      }
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+      this.showError('Failed to delete transaction');
+    }
+  }
+
+  async loadTransactions() {
+    try {
+      console.log('Loading transactions...');
+      const response = await fetch(`${this.apiBase}/transactions`);
+      if (!response.ok) throw new Error('Failed to load transactions');
+      
+      this.transactions = await response.json();
+      console.log('Loaded', this.transactions.length, 'transactions');
+      
+      const cyclesResponse = await fetch(`${this.apiBase}/portfolio/trades`);
+      if (cyclesResponse.ok) {
+        this.cycles = await cyclesResponse.json();
+      }
+      
+      this.renderTransactions();
+      
+    } catch (error) {
+      console.error('Error loading transactions:', error);
+    }
+  }
+
+  renderTransactions() {
+    if (!this.transactionsBody) return;
+    
+    if (this.transactions.length === 0) {
+      this.transactionsBody.innerHTML = '<tr><td colspan="9" class="empty-table">No transactions</td></tr>';
+      return;
+    }
+    
+    let html = '';
+    const sortedTxs = [...this.transactions].sort((a, b) => 
+      parseInt(b.timestamp) - parseInt(a.timestamp)
+    );
+    
+    sortedTxs.slice(0, 50).forEach(tx => {
+      const date = new Date(parseInt(tx.timestamp)).toLocaleString();
+      const amount = parseFloat(tx.amount);
+      const price = parseFloat(tx.price);
+      const logo = this.getAssetLogo(tx.asset);
+      
+      const cycle = this.cycles.find(c => c.id === tx.cycle_id) || {};
+      let plDisplay = '-';
+      let plClass = '';
+      
+      if (tx.type === 'sell' && cycle.realized_pl) {
+        const pl = parseFloat(cycle.realized_pl);
+        plDisplay = (pl > 0 ? '+' : '') + '$' + Math.abs(pl).toFixed(2);
+        plClass = pl > 0 ? 'profit' : (pl < 0 ? 'loss' : '');
+      }
+      
+      const duration = this.formatDuration(parseInt(cycle.duration || 0));
+      
+      html += `
+        <tr>
+          <td>
+            <div class="asset-cell">
+              <img src="${logo}" alt="${tx.asset}" onerror="this.src='/assets/logos/placeholder.svg'">
+              ${tx.asset}
+            </div>
+          </td>
+          <td>${tx.type.toUpperCase()}</td>
+          <td>${amount.toFixed(8)}</td>
+          <td>$${this.formatFullPrice(price)}</td>
+          <td>$${tx.type === 'sell' ? this.formatFullPrice(price) : '-'}</td>
+          <td class="${plClass}">${plDisplay}</td>
+          <td>${duration}</td>
+          <td>${date}</td>
+          <td>
+            <button class="delete-btn" data-id="${tx.id}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+    
+    this.transactionsBody.innerHTML = html;
+  }
+
+  // ==================== TIMER METHODS ====================
+  startTimer(asset) {
+    this.activeTimer = {
+      asset,
+      startTime: Date.now()
+    };
+    
+    this.timerDisplay.style.display = 'flex';
+    this.timerInterval = setInterval(() => this.updateTimer(), 1000);
+  }
+
+  stopTimer() {
+    if (this.activeTimer) {
+      const duration = Date.now() - this.activeTimer.startTime;
+      this.activeTimer = null;
+      
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+      }
+      
+      this.timerDisplay.style.display = 'none';
+      this.timerValue.textContent = '00:00:00';
+      return duration;
+    }
+    return 0;
+  }
+
+  updateTimer() {
+    if (!this.activeTimer) return;
+    
+    const duration = Date.now() - this.activeTimer.startTime;
+    const hours = Math.floor(duration / 3600000);
+    const minutes = Math.floor((duration % 3600000) / 60000);
+    const seconds = Math.floor((duration % 60000) / 1000);
+    
+    this.timerValue.textContent = 
+      `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  // ==================== DASHBOARD METHODS ====================
+  async loadDashboardData() {
+    try {
+      console.log('Loading dashboard data...');
+      const response = await fetch(`${this.apiBase}/portfolio/summary`);
+      if (!response.ok) throw new Error('Failed to load portfolio');
+      
+      const data = await response.json();
+      console.log('Dashboard data:', data);
+      
+      this.totalCapital.textContent = `$${this.formatFullNumber(data.totalCapital || 0)}`;
+      
+      const currentBalance = parseFloat(data.currentBalance || 0);
+      const totalCapital = parseFloat(data.totalCapital || 0);
+      const balanceClass = currentBalance >= totalCapital ? 'profit' : 'loss';
+      this.currentBalance.className = `stat-value ${balanceClass}`;
+      this.currentBalance.textContent = `$${this.formatFullNumber(currentBalance)}`;
+      
+      this.totalProfit.textContent = `$${this.formatFullNumber(data.totalProfit || 0)}`;
+      this.totalLoss.textContent = `$${this.formatFullNumber(data.totalLoss || 0)}`;
+      this.winRate.textContent = `${this.formatFullNumber(data.winRate || 0)}%`;
+      
+      this.currentHoldings = data.openPositions || [];
+      console.log('Current holdings set:', this.currentHoldings);
+      this.renderHoldings(this.currentHoldings);
+      
+      const tradesResponse = await fetch(`${this.apiBase}/portfolio/trades`);
+      if (tradesResponse.ok) {
+        this.cycles = await tradesResponse.json();
+        this.renderRecentTrades(this.cycles.slice(0, 5));
+      }
+      
+    } catch (error) {
+      console.error('Error loading dashboard:', error);
+    }
+  }
+
+  renderHoldings(positions) {
+    try {
+      console.log('renderHoldings called with:', positions);
+      
+      if (!this.holdingsList) {
+        console.error('holdingsList element not found');
+        return;
+      }
+      
+      if (!positions || positions.length === 0) {
+        this.holdingsList.innerHTML = '<div class="empty-state">No holdings</div>';
+        return;
+      }
+      
+      let html = `
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: #2A2C33; border-radius: 6px 6px 0 0; border-bottom: 2px solid #353842; margin-bottom: 4px; font-weight: 600; color: #9A9EA7; text-transform: uppercase; font-size: 12px;">
+          <span style="min-width: 100px;">Asset</span>
+          <div style="display: flex; gap: 16px; flex: 1; justify-content: flex-end;">
+            <span style="min-width: 70px; text-align: right;">Amount</span>
+            <span style="min-width: 70px; text-align: right;">Avg Cost</span>
+            <span style="min-width: 70px; text-align: right;">Price</span>
+            <span style="min-width: 70px; text-align: right;">P/L</span>
+            <span style="min-width: 70px; text-align: right;">Value</span>
+          </div>
+        </div>
+      `;
+      
+      positions.forEach(pos => {
+        const logo = this.getAssetLogo(pos.asset);
+        const quantity = Math.abs(parseFloat(pos.quantity) || 0);
+        const entryPrice = parseFloat(pos.entry_price) || 0;
+        const currentPrice = parseFloat(pos.current_price || entryPrice) || 0;
+        const avgCost = parseFloat(pos.average_cost || entryPrice) || 0;
+        const currentValue = quantity * currentPrice;
+        const unrealizedPL = parseFloat(pos.unrealized_pl || 0);
+        const plClass = unrealizedPL >= 0 ? 'color: #2ECC71;' : 'color: #E74C3C;';
+        
+        html += `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: #1E2025; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 2px;">
+            <div style="display: flex; align-items: center; gap: 8px; min-width: 100px; font-weight: 600;">
+              <img src="${logo}" style="width: 20px; height: 20px; border-radius: 50%;" onerror="this.src='/assets/logos/placeholder.svg'">
+              ${pos.asset}
+            </div>
+            <div style="display: flex; gap: 16px; flex: 1; justify-content: flex-end;">
+              <span style="min-width: 70px; text-align: right; font-family: monospace;">${quantity.toFixed(4)}</span>
+              <span style="min-width: 70px; text-align: right; font-family: monospace;">$${this.formatFullNumber(avgCost)}</span>
+              <span style="min-width: 70px; text-align: right; font-family: monospace;">$${this.formatFullPrice(currentPrice)}</span>
+              <span style="min-width: 70px; text-align: right; font-family: monospace; ${plClass}">${unrealizedPL >= 0 ? '+' : ''}$${this.formatFullNumber(Math.abs(unrealizedPL))}</span>
+              <span style="min-width: 70px; text-align: right; font-family: monospace;">$${this.formatFullNumber(currentValue)}</span>
+            </div>
+          </div>
+        `;
+      });
+      
+      this.holdingsList.innerHTML = html;
+      console.log('Holdings rendered with headers');
+      
+    } catch (error) {
+      console.error('Error in renderHoldings:', error);
+      this.holdingsList.innerHTML = '<div class="empty-state">Error loading holdings</div>';
+    }
+  }
+
+  formatNumber(num, decimals = 2) {
+    if (num === undefined || num === null || isNaN(num)) return '0';
+    return parseFloat(num).toFixed(decimals);
+  }
+
+  renderRecentTrades(trades) {
+    if (!this.recentTrades) return;
+    
+    if (!trades || trades.length === 0) {
+      this.recentTrades.innerHTML = '<div class="empty-state">No recent trades</div>';
+      return;
+    }
+    
+    let html = '';
+    trades.forEach(trade => {
+      const logo = this.getAssetLogo(trade.asset);
+      const pl = parseFloat(trade.realized_pl || 0);
+      const plClass = pl >= 0 ? 'profit' : 'loss';
+      const date = new Date(parseInt(trade.exit_date || trade.entry_date)).toLocaleDateString();
+      
+      html += `
+        <div class="trade-item">
+          <div class="trade-asset">
+            <img src="${logo}" alt="${trade.asset}" class="asset-logo-small" onerror="this.src='/assets/logos/placeholder.svg'">
+            ${trade.asset}
+          </div>
+          <div class="trade-details">
+            <span>SELL</span>
+            <span class="${plClass}">${pl >= 0 ? '+' : ''}$${this.formatFullNumber(Math.abs(pl))}</span>
+            <span>${date}</span>
+          </div>
+        </div>
+      `;
+    });
+    
+    this.recentTrades.innerHTML = html;
+  }
+
+  updateDashboardValues() {
+    if (this.currentHoldings && this.currentHoldings.length > 0) {
+      let currentBalance = 0;
+      let totalProfit = 0;
+      let totalLoss = 0;
+      
+      const updatedHoldings = this.currentHoldings.map(pos => {
+        const priceData = this.prices[pos.asset];
+        if (priceData) {
+          const currentPrice = parseFloat(priceData.price);
+          const quantity = Math.abs(parseFloat(pos.quantity));
+          const entryPrice = parseFloat(pos.entry_price);
+          
+          let unrealizedPL;
+          if (parseFloat(pos.quantity) > 0) {
+            unrealizedPL = (currentPrice - entryPrice) * quantity;
+          } else {
+            unrealizedPL = (entryPrice - currentPrice) * quantity;
+          }
+          
+          const currentValue = quantity * currentPrice;
+          currentBalance += currentValue;
+          
+          if (unrealizedPL > 0) {
+            totalProfit += unrealizedPL;
+          } else {
+            totalLoss += Math.abs(unrealizedPL);
+          }
+          
+          return {
+            ...pos,
+            current_price: currentPrice.toString(),
+            current_value: currentValue.toString(),
+            unrealized_pl: unrealizedPL.toString()
+          };
+        }
+        return pos;
+      });
+      
+      const totalCapital = parseFloat(this.totalCapital.textContent.replace('$', ''));
+      const balanceClass = currentBalance >= totalCapital ? 'profit' : 'loss';
+      this.currentBalance.className = `stat-value ${balanceClass}`;
+      this.currentBalance.textContent = `$${this.formatFullNumber(currentBalance)}`;
+      this.totalProfit.textContent = `$${this.formatFullNumber(totalProfit)}`;
+      this.totalLoss.textContent = `$${this.formatFullNumber(totalLoss)}`;
+      
+      this.renderHoldings(updatedHoldings);
+    }
+  }
+
+  // ==================== EXECUTE PLAN METHOD ====================
+  executePlan() {
+    if (!this.currentPlan) return;
+    
+    if (this.txType) this.txType.value = 'buy';
+    if (this.txAsset) this.txAsset.value = this.currentPlan.asset;
+    if (this.txAmount) this.txAmount.value = this.currentPlan.amount;
+    if (this.txPrice) this.txPrice.value = this.currentPlan.entryPrice;
+    
+    document.querySelector('[data-page="journal"]').click();
+    
+    this.startTimer(this.currentPlan.asset);
+  }
+
+  // ==================== SETTINGS METHODS ====================
+  async loadSettings() {
+    try {
+      const response = await fetch(`${this.apiBase}/settings`);
+      if (!response.ok) throw new Error('Failed to load settings');
+      
+      const settings = await response.json();
+      
+      if (this.githubToken) this.githubToken.value = settings.github_token || '';
+      if (this.githubRepo) this.githubRepo.value = settings.github_repo || '';
+      
+      const lastSync = settings.last_sync_time;
+      if (this.lastSyncTime) {
+        if (lastSync && parseInt(lastSync) > 0) {
+          const date = new Date(parseInt(lastSync));
+          this.lastSyncTime.textContent = date.toLocaleString();
+        } else {
+          this.lastSyncTime.textContent = 'Never';
+        }
+      }
+      
+    } catch (error) {
+      console.error('Error loading settings:', error);
+    }
+  }
+
+  async saveSettings() {
+    const enabled = [];
+    document.querySelectorAll('.toggle-item input:checked').forEach(cb => {
+      enabled.push(cb.value);
+    });
+    
+    const settings = {
+      github_token: this.githubToken?.value || '',
+      github_repo: this.githubRepo?.value || ''
+    };
+    
+    try {
+      const assetResponse = await fetch(`${this.apiBase}/assets/enabled`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled })
+      });
+      
+      if (!assetResponse.ok) throw new Error('Failed to save assets');
+      
+      const settingsResponse = await fetch(`${this.apiBase}/settings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+      });
+      
+      if (!settingsResponse.ok) throw new Error('Failed to save settings');
+      
+      await this.loadAssets();
+      this.showSuccess('Settings saved');
+      
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      this.showError('Failed to save settings');
+    }
+  }
+
+  async manualSync() {
+    try {
+      this.manualSyncBtn.textContent = 'Syncing...';
+      this.manualSyncBtn.disabled = true;
+      
+      const response = await fetch(`${this.apiBase}/sync`, { method: 'POST' });
+      const data = await response.json();
+      
+      if (data.success) {
+        this.lastSyncTime.textContent = new Date().toLocaleString();
+        this.showSuccess('Sync completed');
+      } else {
+        throw new Error('Sync failed');
+      }
+      
+    } catch (error) {
+      console.error('Error syncing:', error);
+      this.showError('Sync failed');
+    } finally {
+      this.manualSyncBtn.textContent = 'Sync Now';
+      this.manualSyncBtn.disabled = false;
+    }
+  }
+
+  // Replace the restoreFromGitHub method in app.js (around line 1000)
+
+async restoreFromGitHub() {
+  if (!confirm('Restore from GitHub? This will overwrite current data.')) return;
+  
+  try {
+    // Show loading state
+    this.restoreSyncBtn.textContent = 'Restoring...';
+    this.restoreSyncBtn.disabled = true;
+    
+    console.log('🔄 Calling restore API...');
+    const response = await fetch(`${this.apiBase}/restore`, { method: 'POST' });
+    const data = await response.json();
+    console.log('Restore response:', data);
+    
+    if (data.success) {
+      // Force reload all data
+      console.log('✅ Restore successful, reloading data...');
+      
+      // Clear all local state
+      this.transactions = [];
+      this.cycles = [];
+      this.plans = [];
+      this.currentPlan = null;
+      this.currentHoldings = [];
+      
+      // Reload all data from new database
+      await this.loadAssets();
+      await this.loadTransactions();
+      await this.loadDashboardData();
+      await this.loadSettings();
+      
+      // Update UI based on current page
+      if (this.currentPage === 'dashboard') {
+        await this.loadDashboardData();
+      } else if (this.currentPage === 'journal') {
+        await this.loadTransactions();
+      }
+      
+      // Show success message with stats if available
+      if (data.stats) {
+        this.showSuccess(`Restore completed! ${data.stats.transactions} transactions, ${data.stats.cycles} cycles restored.`);
+      } else {
+        this.showSuccess('Restore completed successfully');
+      }
+      
+      console.log('✅ All data reloaded after restore');
+    } else {
+      this.showError('Restore failed: ' + (data.error || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error restoring:', error);
+    this.showError('Restore failed: ' + error.message);
+  } finally {
+    this.restoreSyncBtn.textContent = 'Restore';
+    this.restoreSyncBtn.disabled = false;
+  }
+}
+
+  async discoverAssets() {
+    try {
+      this.discoverAssetsBtn.textContent = 'Discovering...';
+      this.discoverAssetsBtn.disabled = true;
+      
+      const response = await fetch(`${this.apiBase}/assets/discover`, { method: 'POST' });
+      const data = await response.json();
+      
+      if (data.success) {
+        await this.loadAssets();
+        this.showSuccess(`Found ${data.newAssets.length} new assets`);
+      }
+      
+    } catch (error) {
+      console.error('Error discovering assets:', error);
+      this.showError('Discovery failed');
+    } finally {
+      this.discoverAssetsBtn.textContent = 'Discover New Assets';
+      this.discoverAssetsBtn.disabled = false;
+    }
+  }
+
+  confirmFormat() {
+    this.modalMessage.textContent = 'This will delete all transactions, plans, reset settings, AND stop all active timers. This action cannot be undone.';
+    this.confirmModal.classList.add('active');
+  }
+
+  async executeFormat() {
+  try {
+    console.log('🔄 Formatting memory...');
+    
+    const response = await fetch(`${this.apiBase}/format`, { 
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    
+    const data = await response.json();
+    console.log('Format response:', data);
+    
+    if (data.success) {
+      this.closeModal();
+      
+      // Force stop and clear timer
+      if (this.activeTimer) {
+        if (this.timerInterval) {
+          clearInterval(this.timerInterval);
+          this.timerInterval = null;
+        }
+        this.activeTimer = null;
+        this.timerDisplay.style.display = 'none';
+        this.timerValue.textContent = '00:00:00';
+      }
+      
+      // Clear all local data
+      this.transactions = [];
+      this.cycles = [];
+      this.plans = [];
+      this.currentPlan = null;
+      this.currentHoldings = [];
+      
+      // Reset interface to defaults
+      if (this.interfaceManager) {
+        this.interfaceManager.resetToDefaults();
+      }
+      
+      // Clear any stored state
+      localStorage.removeItem('envy_interface_settings');
+      
+      // Reload all data
+      await this.loadAssets();
+      await this.loadDashboardData();
+      await this.loadTransactions();
+      await this.loadSettings();
+      
+      // Hide analysis results
+      if (this.analysisResults) {
+        this.analysisResults.style.display = 'none';
+      }
+      
+      this.showSuccess('Memory formatted successfully. All timers stopped.');
+    }
+    
+  } catch (error) {
+    console.error('Error formatting:', error);
+    this.showError('Format failed: ' + error.message);
+  }
+}
+
+  // ADD THIS RIGHT HERE - after executeFormat() and before the next method
+closeModal() {
+  console.log('closeModal called');
+  if (this.confirmModal) {
+    this.confirmModal.classList.remove('active');
+  }
+}
+
+  // ==================== STATUS METHODS ====================
+  startStatusChecks() {
+    this.checkStatus();
+    setInterval(() => this.checkStatus(), 5000);
+  }
+
+  async checkStatus() {
+    try {
+      const response = await fetch(`${this.apiBase}/health`);
+      const data = await response.json();
+      
+      if (response.ok) {
+        this.updateConnectionStatus(data.connection || 'connected');
+      } else {
+        this.updateConnectionStatus('disconnected');
+      }
+    } catch (error) {
+      this.updateConnectionStatus('disconnected');
+    }
+  }
+
+  updateConnectionStatus(status) {
+    this.connectionStatus = status;
+    
+    if (this.statusDot) {
+      this.statusDot.className = 'status-dot ' + status;
+      this.statusText.textContent = status === 'connected' ? 'Connected' : 
+                                   status === 'connecting' ? 'Connecting...' : 'Disconnected';
+    }
+  }
+
+  async loadInitialData() {
+    await this.fetchPrices();
+    await this.loadTransactions();
+    await this.loadDashboardData();
+    await this.checkStatus();
+  }
+
+  async loadPlannerData() {
+    if (this.selectedAsset) {
+      await this.fillEntryPrice();
+    }
+  }
+
+  getAssetLogo(symbol) {
+  // Try to find in allAssets first
+  const asset = this.allAssets?.find(a => a.symbol === symbol);
+  
+  if (asset?.logo_path) {
+    // If path exists in database, use it
+    return asset.logo_path;
+  }
+  
+  // Fallback: construct path with proper base
+  // Check if PNG exists (prefer PNG), otherwise use SVG
+  return `/assets/logos/${symbol}.svg`;
+}
+
+  // ==================== HELPER METHODS ====================
+  formatFullNumber(num, decimals = 2) {
+    if (num === undefined || num === null || isNaN(num)) return '0.00';
+    return parseFloat(num).toFixed(decimals);
+  }
+
+  formatFullPrice(price) {
+    if (!price || isNaN(price)) return '0.00';
+    const num = parseFloat(price);
+    if (num < 0.01) return num.toFixed(8);
+    if (num < 1) return num.toFixed(6);
+    if (num < 100) return num.toFixed(4);
+    return num.toFixed(2);
+  }
+
+  formatDuration(ms) {
+    if (!ms) return '00:00:00';
+    const seconds = Math.floor(ms / 1000);
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  showSuccess(message) {
+    alert(message);
+  }
+
+  showError(message) {
+    alert('Error: ' + message);
+  }
+
+  // ==================== INTERFACE CUSTOMIZATION METHODS ====================
+  previewInterface() {
+    console.log('previewInterface called');
+    
+    if (!this.interfaceManager) {
+      console.error('InterfaceManager not initialized');
+      this.showError('Interface manager not ready');
+      return;
+    }
+    
+    const themeRadios = document.querySelectorAll('input[name="theme"]');
+    const theme = Array.from(themeRadios).find(r => r.checked)?.value || 'dark';
+    
+    const fontSize = this.fontSizeSlider ? parseInt(this.fontSizeSlider.value) : 15;
+    
+    const densityRadios = document.querySelectorAll('input[name="density"]');
+    const density = Array.from(densityRadios).find(r => r.checked)?.value || 'comfortable';
+    
+    const fontFamily = this.fontFamilySelect ? this.fontFamilySelect.value : 'Rajdhani, sans-serif';
+    const transparency = this.transparencySlider ? parseFloat(this.transparencySlider.value) : 0.85;
+    
+    const animationRadios = document.querySelectorAll('input[name="animation"]');
+    const animation = Array.from(animationRadios).find(r => r.checked)?.value || 'normal';
+    
+    const touchOptimize = this.touchOptimize ? this.touchOptimize.checked : false;
+    const highContrast = this.highContrast ? this.highContrast.checked : false;
+    const reduceMotion = this.reduceMotion ? this.reduceMotion.checked : false;
+    const compactMode = this.compactMode ? this.compactMode.checked : false;
+    
+    console.log('Preview values:', {
+      theme, fontSize, density, fontFamily, transparency, animation,
+      touchOptimize, highContrast, reduceMotion, compactMode
+    });
+    
+    this.interfaceManager.currentSettings = {
+      theme, 
+      fontSize, 
+      density, 
+      fontFamily,
+      transparency, 
+      animationSpeed: animation,
+      touchOptimize, 
+      highContrast, 
+      reduceMotion, 
+      compactMode
+    };
+    
+    this.interfaceManager.applySettings();
+    this.showSuccess('Preview applied');
+  }
+
+  resetInterface() {
+    console.log('resetInterface called');
+    
+    if (!this.interfaceManager) {
+      console.error('InterfaceManager not initialized');
+      this.showError('Interface manager not ready');
+      return;
+    }
+    
+    this.interfaceManager.resetToDefaults();
+    this.showSuccess('Settings reset to defaults');
+  }
+
+  saveInterface() {
+    console.log('saveInterface called');
+    
+    if (!this.interfaceManager) {
+      console.error('InterfaceManager not initialized');
+      this.showError('Interface manager not ready. Please refresh the page.');
+      return;
+    }
+    
+    this.previewInterface();
+    
+    try {
+      console.log('Attempting to save settings to storage');
+      this.interfaceManager.saveToStorage();
+      console.log('Settings saved successfully');
+      this.showSuccess('Settings saved permanently');
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      this.showError('Failed to save settings');
+    }
+  }
+}
+
+// ==================== START APPLICATION ====================
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM Content Loaded');
+  window.envy = new ENVY();
+});

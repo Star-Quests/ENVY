@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <rect width="128" height="128" rx="24" fill="#1E2025"/>
+  <circle cx="64" cy="64" r="48" fill="#627EEA"/>
+  <text x="64" y="84" font-family="Orbitron, sans-serif" font-size="36" font-weight="bold" fill="white" text-anchor="middle">A</text>
+</svg>

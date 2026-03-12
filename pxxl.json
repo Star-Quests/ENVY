@@ -1,0 +1,10 @@
+{
+  "name": "envy",
+  "type": "node",
+  "buildCommand": "npm install && node backend/setup-logos.js && node backend/migrate.js",
+  "startCommand": "npm start",
+  "env": {
+    "NODE_ENV": "production",
+    "PORT": "3000"
+  }
+}
