@@ -1423,29 +1423,47 @@ closeModal() {
   }
 
   async checkStatus() {
-    try {
-      const response = await fetch(`${this.apiBase}/health`);
-      const data = await response.json();
+  try {
+    const response = await fetch(`${this.apiBase}/health`);
+    const data = await response.json();
+    
+    if (response.ok) {
+      // Log the actual status from server for debugging
+      console.log('📡 Server connection status:', data.connection);
       
-      if (response.ok) {
-        this.updateConnectionStatus(data.connection || 'connected');
-      } else {
-        this.updateConnectionStatus('disconnected');
+      // Use the server's connection status - this will show "connected"!
+      this.updateConnectionStatus(data.connection || 'connected');
+      
+      // Also update last update time if available
+      if (data.lastUpdate) {
+        this.lastUpdateTime = data.lastUpdate;
       }
-    } catch (error) {
+    } else {
       this.updateConnectionStatus('disconnected');
     }
+  } catch (error) {
+    console.error('Health check failed:', error);
+    this.updateConnectionStatus('disconnected');
   }
+}
 
   updateConnectionStatus(status) {
-    this.connectionStatus = status;
+  this.connectionStatus = status;
+  
+  if (this.statusDot) {
+    // Remove all status classes first
+    this.statusDot.className = 'status-dot';
     
-    if (this.statusDot) {
-      this.statusDot.className = 'status-dot ' + status;
-      this.statusText.textContent = status === 'connected' ? 'Connected' : 
-                                   status === 'connecting' ? 'Connecting...' : 'Disconnected';
-    }
+    // Add the appropriate class
+    this.statusDot.classList.add(status);
+    
+    // Update text
+    this.statusText.textContent = status === 'connected' ? 'Connected' : 
+                                 status === 'connecting' ? 'Connecting...' : 'Disconnected';
+    
+    console.log(`🔌 Connection status updated to: ${status}`); // Debug log
   }
+}
 
   async loadInitialData() {
     await this.fetchPrices();
