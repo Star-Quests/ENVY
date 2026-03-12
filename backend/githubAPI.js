@@ -122,8 +122,19 @@ class GitHubAPI {
     return true;
 
   } catch (error) {
-    console.error('❌ GitHub API sync error:', error.response?.data || error.message);
-    return false;
+    console.error('❌ GitHub API sync error DETAILS:');
+    if (error.response) {
+      console.error('Status:', error.response.status);
+      console.error('Headers:', error.response.headers);
+      console.error('Data:', error.response.data);
+      return { success: false, error: error.response.data };
+    } else if (error.request) {
+      console.error('No response received:', error.request);
+      return { success: false, error: 'No response from GitHub' };
+    } else {
+      console.error('Error message:', error.message);
+      return { success: false, error: error.message };
+    }
   }
 }
 

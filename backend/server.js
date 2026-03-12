@@ -865,9 +865,18 @@ app.post('/api/settings', (req, res) => {
 // GitHub sync routes
 app.post('/api/sync', async (req, res) => {
   try {
-    const success = await githubSync.sync();
-    res.json({ success, timestamp: Date.now() });
+    console.log('🔄 /api/sync called');
+    const result = await githubSync.sync();
+    console.log('📤 Sync result:', result);
+    
+    if (result === true) {
+      res.json({ success: true, timestamp: Date.now() });
+    } else {
+      // If result is false, get the actual error from githubSync
+      res.json({ success: false, error: 'Sync failed - check server logs', timestamp: Date.now() });
+    }
   } catch (error) {
+    console.error('❌ /api/sync error:', error);
     res.status(500).json({ error: error.message });
   }
 });
