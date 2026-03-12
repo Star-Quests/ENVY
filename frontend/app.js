@@ -1245,14 +1245,27 @@ class ENVY {
     this.manualSyncBtn.textContent = 'Syncing...';
     this.manualSyncBtn.disabled = true;
     
+    console.log('🔄 Calling sync API...');
     const response = await fetch(`${this.apiBase}/sync`, { method: 'POST' });
     
-    // Check if response is OK before parsing JSON
-    if (!response.ok) {
-      throw new Error(`HTTP error ${response.status}`);
+    console.log('📡 Sync response status:', response.status);
+    
+    // Try to get response text first
+    const responseText = await response.text();
+    console.log('📡 Sync response text:', responseText);
+    
+    // Try to parse as JSON
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      console.error('❌ Failed to parse response as JSON:', e);
+      throw new Error('Server returned: ' + responseText.substring(0, 100));
     }
     
-    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}: ${data.error || response.statusText}`);
+    }
     
     if (data.success) {
       this.lastSyncTime.textContent = new Date().toLocaleString();
@@ -1262,7 +1275,7 @@ class ENVY {
     }
     
   } catch (error) {
-    console.error('Error syncing:', error);
+    console.error('❌ Error syncing:', error);
     this.showError('Sync failed: ' + error.message);
   } finally {
     this.manualSyncBtn.textContent = 'Sync Now';
