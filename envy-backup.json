@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": 1773346657013,
+  "timestamp": 1773346671622,
   "tables": {
     "transactions": {
       "columns": [
@@ -3424,8 +3424,8 @@
         ],
         [
           "last_sync_time",
-          "1773338002876",
-          1773338002876
+          "1773346658264",
+          1773346658264
         ],
         [
           "last_asset_update",
