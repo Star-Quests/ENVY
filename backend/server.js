@@ -57,6 +57,12 @@ app.use(express.json({ limit: '10mb' }));
 // Serve static assets (logos, icons, etc.)
 app.use('/assets', express.static(path.join(__dirname, '../frontend/assets')));
 
+// ==================== SIMPLE TEST ROUTE ====================
+app.get('/test', (req, res) => {
+  console.log('✅ Test route accessed!');
+  res.json({ message: 'Backend is working!', time: Date.now() });
+});
+
 // ==================== SERVE FRONTEND ====================
 // Serve the main frontend files (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, '../frontend')));
@@ -480,9 +486,8 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// ==================== ASSET ROUTES ====================
-
 app.get('/api/assets', async (req, res) => {
+  console.log('📡 /api/assets called'); // Add this log
   try {
     const assets = db.exec(`
       SELECT symbol, enabled, display_name, logo_path 
@@ -502,8 +507,10 @@ app.get('/api/assets', async (req, res) => {
       });
     }
     
+    console.log(`✅ /api/assets returning ${result.length} assets`);
     res.json(result);
   } catch (error) {
+    console.error('❌ /api/assets error:', error);
     res.status(500).json({ error: error.message });
   }
 });
