@@ -1241,28 +1241,34 @@ class ENVY {
   }
 
   async manualSync() {
-    try {
-      this.manualSyncBtn.textContent = 'Syncing...';
-      this.manualSyncBtn.disabled = true;
-      
-      const response = await fetch(`${this.apiBase}/sync`, { method: 'POST' });
-      const data = await response.json();
-      
-      if (data.success) {
-        this.lastSyncTime.textContent = new Date().toLocaleString();
-        this.showSuccess('Sync completed');
-      } else {
-        throw new Error('Sync failed');
-      }
-      
-    } catch (error) {
-      console.error('Error syncing:', error);
-      this.showError('Sync failed');
-    } finally {
-      this.manualSyncBtn.textContent = 'Sync Now';
-      this.manualSyncBtn.disabled = false;
+  try {
+    this.manualSyncBtn.textContent = 'Syncing...';
+    this.manualSyncBtn.disabled = true;
+    
+    const response = await fetch(`${this.apiBase}/sync`, { method: 'POST' });
+    
+    // Check if response is OK before parsing JSON
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
     }
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      this.lastSyncTime.textContent = new Date().toLocaleString();
+      this.showSuccess('Sync completed');
+    } else {
+      throw new Error(data.error || 'Sync failed');
+    }
+    
+  } catch (error) {
+    console.error('Error syncing:', error);
+    this.showError('Sync failed: ' + error.message);
+  } finally {
+    this.manualSyncBtn.textContent = 'Sync Now';
+    this.manualSyncBtn.disabled = false;
   }
+}
 
   // Replace the restoreFromGitHub method in app.js (around line 1000)
 
