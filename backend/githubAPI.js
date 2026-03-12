@@ -35,159 +35,166 @@ class GitHubAPI {
   }
 
   async sync() {
-    try {
-      const settings = await this.getSettings();
-      const token = settings.github_token || process.env.GITHUB_TOKEN;
-      const repo = settings.github_repo || process.env.GITHUB_REPO;
+  try {
+    const settings = await this.getSettings();
+    const token = settings.github_token || process.env.GITHUB_TOKEN;
+    const repo = settings.github_repo || process.env.GITHUB_REPO;
 
-      if (!token || !repo) {
-        console.log('⚠️ GitHub credentials not configured');
-        return false;
-      }
+    if (!token || !repo) {
+      console.log('⚠️ GitHub credentials not configured');
+      return false;
+    }
 
-      console.log('🔄 Starting GitHub API sync...');
+    console.log('🔄 Starting GitHub API sync...');
 
-      // Get all data from current database
-      const tables = {};
-      const tableNames = this.db.exec("SELECT name FROM sqlite_master WHERE type='table'");
+    // Get all data from current database
+    const tables = {};
+    const tableNames = this.db.exec("SELECT name FROM sqlite_master WHERE type='table'");
 
-      if (tableNames[0]) {
-        for (const row of tableNames[0].values) {
-          const tableName = row[0];
-          const tableData = this.db.exec(`SELECT * FROM ${tableName}`);
-          tables[tableName] = tableData;
-        }
-      }
-
-      console.log(`📊 Extracted ${Object.keys(tables).length} tables`);
-
-      // Create a backup object with schema and data
-      const backup = {
-        version: '1.0',
-        timestamp: Date.now(),
-        tables: {}
-      };
-
-      for (const [tableName, tableData] of Object.entries(tables)) {
+    if (tableNames[0]) {
+      for (const row of tableNames[0].values) {
+        const tableName = row[0];
+        const tableData = this.db.exec(`SELECT * FROM ${tableName}`);
         if (tableData[0]) {
-          backup.tables[tableName] = {
+          tables[tableName] = {
             columns: tableData[0].columns,
             rows: tableData[0].values
           };
         }
       }
+    }
 
-      // Convert to JSON
-      const backupJson = JSON.stringify(backup, null, 2);
-      const content = Buffer.from(backupJson).toString('base64');
+    console.log(`📊 Extracted ${Object.keys(tables).length} tables`);
 
-      // Upload to GitHub
-      const url = `https://api.github.com/repos/${repo}/contents/envy-backup.json`;
+    // Create a backup object
+    const backup = {
+      version: '1.0',
+      timestamp: Date.now(),
+      tables
+    };
 
-      // First, check if file exists to get its SHA
-      let sha = null;
-      try {
-        const checkResponse = await axios.get(url, {
-          headers: {
-            'Authorization': `token ${token}`,
-            'Accept': 'application/vnd.github.v3+json'
-          }
-        });
-        sha = checkResponse.data.sha;
-        console.log('📁 Existing backup found, will update');
-      } catch (err) {
-        if (err.response?.status !== 404) {
-          console.error('❌ Error checking file:', err.message);
-        }
-        console.log('📁 No existing backup, will create new');
-      }
+    // Convert to JSON and base64
+    const backupJson = JSON.stringify(backup, null, 2);
+    const content = Buffer.from(backupJson).toString('base64');
 
-      // Create or update file
-      const putData = {
-        message: `ENVY Backup ${new Date().toISOString()}`,
-        content: content
-      };
+    // Upload to GitHub
+    const url = `https://api.github.com/repos/${repo}/contents/envy-backup.json`;
 
-      if (sha) {
-        putData.sha = sha;
-      }
-
-      await axios.put(url, putData, {
+    // Check if file exists
+    let sha = null;
+    try {
+      const checkResponse = await axios.get(url, {
         headers: {
           'Authorization': `token ${token}`,
           'Accept': 'application/vnd.github.v3+json'
-        }
+        },
+        timeout: 10000
       });
-
-      await this.updateSetting('last_sync_time', Date.now().toString());
-      console.log('✅ Successfully synced with GitHub API');
-      return true;
-
-    } catch (error) {
-      console.error('❌ GitHub API sync error:', error.response?.data || error.message);
-      return false;
+      sha = checkResponse.data.sha;
+      console.log('📁 Existing backup found, will update');
+    } catch (err) {
+      if (err.response?.status !== 404) {
+        console.error('❌ Error checking file:', err.message);
+      }
+      console.log('📁 No existing backup, will create new');
     }
+
+    // Create or update file
+    const putData = {
+      message: `ENVY Backup ${new Date().toISOString()}`,
+      content: content
+    };
+
+    if (sha) {
+      putData.sha = sha;
+    }
+
+    await axios.put(url, putData, {
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json'
+      },
+      timeout: 30000
+    });
+
+    await this.updateSetting('last_sync_time', Date.now().toString());
+    console.log('✅ Successfully synced with GitHub API');
+    return true;
+
+  } catch (error) {
+    console.error('❌ GitHub API sync error:', error.response?.data || error.message);
+    return false;
   }
+}
 
   async restore(dbReloadCallback) {
-    try {
-      const settings = await this.getSettings();
-      const token = settings.github_token || process.env.GITHUB_TOKEN;
-      const repo = settings.github_repo || process.env.GITHUB_REPO;
+  try {
+    const settings = await this.getSettings();
+    const token = settings.github_token || process.env.GITHUB_TOKEN;
+    const repo = settings.github_repo || process.env.GITHUB_REPO;
 
-      if (!token || !repo) {
-        console.log('⚠️ GitHub credentials not configured');
-        return { success: false, error: 'GitHub not configured' };
+    if (!token || !repo) {
+      return { success: false, error: 'GitHub not configured' };
+    }
+
+    console.log('🔄 Restoring from GitHub API...');
+
+    // Download backup from GitHub
+    const url = `https://api.github.com/repos/${repo}/contents/envy-backup.json`;
+
+    const response = await axios.get(url, {
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json'
+      },
+      timeout: 30000
+    });
+
+    if (!response.data.content) {
+      return { success: false, error: 'No backup found' };
+    }
+
+    // Decode content
+    const content = Buffer.from(response.data.content, 'base64').toString('utf8');
+    const backup = JSON.parse(content);
+
+    console.log(`📊 Backup contains ${Object.keys(backup.tables).length} tables`);
+
+    // Get database path
+    const dbPath = path.join(__dirname, 'database/envy.db');
+    await fs.ensureDir(path.dirname(dbPath));
+
+    // Initialize SQL.js for new database
+    const possiblePaths = [
+      path.join(__dirname, 'node_modules/sql.js/dist/sql-wasm.wasm'),
+      path.join(__dirname, '../node_modules/sql.js/dist/sql-wasm.wasm'),
+      path.join(__dirname, 'sql-wasm.wasm')
+    ];
+
+    let wasmPath = null;
+    for (const p of possiblePaths) {
+      if (await fs.pathExists(p)) {
+        wasmPath = p;
+        break;
       }
+    }
 
-      console.log('🔄 Restoring from GitHub API...');
+    if (!wasmPath) {
+      return { success: false, error: 'sql-wasm.wasm not found' };
+    }
 
-      // Download backup from GitHub
-      const url = `https://api.github.com/repos/${repo}/contents/envy-backup.json`;
+    const wasmBinary = await fs.readFile(wasmPath);
+    const SQL = await initSqlJs({ wasmBinary });
+    const newDb = new SQL.Database();
 
-      const response = await axios.get(url, {
-        headers: {
-          'Authorization': `token ${token}`,
-          'Accept': 'application/vnd.github.v3+json'
-        }
-      });
+    // Recreate schema and insert data
+    const tableNames = this.db.exec("SELECT name FROM sqlite_master WHERE type='table'");
 
-      if (!response.data.content) {
-        return { success: false, error: 'No backup found' };
-      }
-
-      // Decode content
-      const content = Buffer.from(response.data.content, 'base64').toString('utf8');
-      const backup = JSON.parse(content);
-
-      console.log(`📊 Backup contains ${Object.keys(backup.tables).length} tables`);
-
-      // Initialize SQL.js for new database
-      const possiblePaths = [
-        path.join(__dirname, 'node_modules/sql.js/dist/sql-wasm.wasm'),
-        path.join(__dirname, '../node_modules/sql.js/dist/sql-wasm.wasm'),
-        path.join(__dirname, 'sql-wasm.wasm')
-      ];
-
-      let wasmPath = null;
-      for (const p of possiblePaths) {
-        if (await fs.pathExists(p)) {
-          wasmPath = p;
-          break;
-        }
-      }
-
-      if (!wasmPath) {
-        return { success: false, error: 'sql-wasm.wasm not found' };
-      }
-
-      const wasmBinary = await fs.readFile(wasmPath);
-      const SQL = await initSqlJs({ wasmBinary });
-      const newDb = new SQL.Database();
-
-      // Recreate schema and insert data
-      for (const [tableName, tableData] of Object.entries(backup.tables)) {
-        // Get CREATE TABLE statement from original database
+    if (tableNames[0]) {
+      for (const row of tableNames[0].values) {
+        const tableName = row[0];
+        
+        // Get CREATE TABLE statement
         const createSQL = this.db.exec(`SELECT sql FROM sqlite_master WHERE type='table' AND name='${tableName}'`);
         if (createSQL[0]) {
           try {
@@ -197,12 +204,12 @@ class GitHubAPI {
           }
         }
 
-        // Insert data
-        if (tableData.rows && tableData.rows.length > 0) {
-          const columns = tableData.columns;
+        // Insert data if available in backup
+        if (backup.tables[tableName] && backup.tables[tableName].rows) {
+          const columns = backup.tables[tableName].columns;
           const placeholders = columns.map(() => '?').join(',');
 
-          for (const row of tableData.rows) {
+          for (const row of backup.tables[tableName].rows) {
             const insertSQL = `INSERT INTO ${tableName} (${columns.join(',')}) VALUES (${placeholders})`;
             try {
               newDb.run(insertSQL, row);
@@ -212,35 +219,34 @@ class GitHubAPI {
           }
         }
       }
-
-      // Export the new database
-      const data = newDb.export();
-      const buffer = Buffer.from(data);
-
-      // Write to file
-      const dbPath = path.join(__dirname, 'database/envy.db');
-      await fs.writeFile(dbPath, buffer);
-      console.log(`✅ Database file written: ${buffer.length} bytes`);
-
-      // Call the reload callback
-      if (dbReloadCallback && typeof dbReloadCallback === 'function') {
-        const reloadSuccess = await dbReloadCallback(buffer);
-        if (reloadSuccess) {
-          console.log('✅ Database reloaded successfully');
-          return { success: true, message: 'Restore completed and database reloaded' };
-        } else {
-          console.log('❌ Failed to reload database');
-          return { success: false, error: 'Failed to reload database' };
-        }
-      }
-
-      return { success: true, message: 'File restored but database not reloaded' };
-
-    } catch (error) {
-      console.error('❌ GitHub API restore error:', error.response?.data || error.message);
-      return { success: false, error: error.message };
     }
+
+    // Export the new database
+    const data = newDb.export();
+    const buffer = Buffer.from(data);
+
+    // Write to file
+    await fs.writeFile(dbPath, buffer);
+    console.log(`✅ Database file written: ${buffer.length} bytes`);
+
+    // Call the reload callback
+    if (dbReloadCallback && typeof dbReloadCallback === 'function') {
+      const reloadSuccess = await dbReloadCallback(buffer);
+      if (reloadSuccess) {
+        console.log('✅ Database reloaded successfully');
+        return { success: true, message: 'Restore completed and database reloaded' };
+      } else {
+        return { success: false, error: 'Failed to reload database' };
+      }
+    }
+
+    return { success: true, message: 'File restored but database not reloaded' };
+
+  } catch (error) {
+    console.error('❌ GitHub API restore error:', error.response?.data || error.message);
+    return { success: false, error: error.message };
   }
+}
 
   // Scheduled sync function
   async scheduledSync() {

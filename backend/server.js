@@ -108,7 +108,7 @@ async function initDatabase() {
     }
     
     ledger = new Ledger(db);
-    githubSync = new GitHubSync(db, ledger);
+    githubSync = new GitHubAPI(db);
     bybitAssets = new BybitAssets(db);
     
     setInterval(saveDatabaseToFile, 30000);
