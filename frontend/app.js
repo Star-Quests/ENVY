@@ -1267,11 +1267,14 @@ class ENVY {
       throw new Error(`HTTP error ${response.status}: ${data.error || response.statusText}`);
     }
     
-    if (data.success) {
+    // Check for success - handle both formats
+    if (data.success === true || (data.success && data.success === true)) {
       this.lastSyncTime.textContent = new Date().toLocaleString();
-      this.showSuccess('Sync completed');
+      this.showSuccess('Sync completed successfully');
+      console.log('✅ Sync successful!');
     } else {
-      throw new Error(data.error || 'Sync failed');
+      console.error('❌ Sync returned false:', data);
+      throw new Error(data.error || 'Sync failed - check server logs');
     }
     
   } catch (error) {
@@ -1289,7 +1292,6 @@ async restoreFromGitHub() {
   if (!confirm('Restore from GitHub? This will overwrite current data.')) return;
   
   try {
-    // Show loading state
     this.restoreSyncBtn.textContent = 'Restoring...';
     this.restoreSyncBtn.disabled = true;
     

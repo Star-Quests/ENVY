@@ -125,6 +125,23 @@ class GitHubAPI {
         tables
       };
 
+      // 🔒 MASK GITHUB TOKEN IN BACKUP
+if (backup.tables && backup.tables.settings) {
+  const settingsTable = backup.tables.settings;
+  const keyIndex = settingsTable.columns.indexOf('key');
+  const valueIndex = settingsTable.columns.indexOf('value');
+  
+  if (keyIndex !== -1 && valueIndex !== -1) {
+    for (let i = 0; i < settingsTable.rows.length; i++) {
+      if (settingsTable.rows[i][keyIndex] === 'github_token') {
+        settingsTable.rows[i][valueIndex] = '[MASKED]';
+        console.log('🔒 Masked GitHub token in backup');
+        break;
+      }
+    }
+  }
+}
+
       // Convert to JSON and base64
       const backupJson = JSON.stringify(backup, null, 2);
       const content = Buffer.from(backupJson).toString('base64');

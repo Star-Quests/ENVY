@@ -869,15 +869,27 @@ app.post('/api/sync', async (req, res) => {
     const result = await githubSync.sync();
     console.log('📤 Sync result:', result);
     
-    if (result === true) {
-      res.json({ success: true, timestamp: Date.now() });
+    // Always return a consistent format
+    if (result && result.success === true) {
+      res.json({ 
+        success: true, 
+        message: result.message || 'Sync completed successfully',
+        timestamp: Date.now() 
+      });
     } else {
-      // If result is false, get the actual error from githubSync
-      res.json({ success: false, error: 'Sync failed - check server logs', timestamp: Date.now() });
+      // Return error but with 200 status so frontend can read the error message
+      res.json({ 
+        success: false, 
+        error: result?.error || 'Sync failed - check server logs',
+        timestamp: Date.now() 
+      });
     }
   } catch (error) {
     console.error('❌ /api/sync error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ 
+      success: false, 
+      error: error.message 
+    });
   }
 });
 
