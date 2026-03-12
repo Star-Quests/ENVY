@@ -1,5 +1,5 @@
 // File: backend/server.js
-// ENVY Backend Server - PROFESSIONAL EDITION - FIXED
+// ENVY Backend Server - FIXED VERSION
 
 const express = require('express');
 const cors = require('cors');
@@ -21,35 +21,6 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 console.log(`🚀 Starting server on port: ${PORT}`);
 
-// ==================== TEST BYBIT CONNECTION ====================
-const https = require('https');
-console.log('🔍 Testing Bybit API connection...');
-https.get('https://api.bybit.com/v5/market/time', (resp) => {
-  let data = '';
-  resp.on('data', chunk => data += chunk);
-  resp.on('end', () => {
-    try {
-      const result = JSON.parse(data);
-      console.log('✅ Bybit API reachable:', result);
-    } catch (e) {
-      console.log('❌ Bybit API error:', e.message);
-    }
-  });
-}).on('error', (err) => {
-  console.log('❌ Cannot reach Bybit API:', err.message);
-});
-
-// Test WebSocket connection
-const testWs = new WebSocket('wss://stream.bybit.com/v5/public/spot');
-testWs.on('open', () => {
-  console.log('✅ WebSocket connection test successful');
-  testWs.close();
-});
-testWs.on('error', (err) => {
-  console.log('❌ WebSocket connection test failed:', err.message);
-});
-// ==================== END TEST ====================
-
 // ==================== MIDDLEWARE ====================
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
@@ -57,23 +28,8 @@ app.use(express.json({ limit: '10mb' }));
 // Serve static assets (logos, icons, etc.)
 app.use('/assets', express.static(path.join(__dirname, '../frontend/assets')));
 
-// ==================== SIMPLE TEST ROUTE ====================
-app.get('/test', (req, res) => {
-  console.log('✅ Test route accessed!');
-  res.json({ message: 'Backend is working!', time: Date.now() });
-});
-
-// ==================== SERVE FRONTEND ====================
 // Serve the main frontend files (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, '../frontend')));
-
-// For any route not matching an API endpoint, serve index.html
-app.get('*', (req, res) => {
-  if (!req.path.startsWith('/api')) {
-    res.sendFile(path.join(__dirname, '../frontend/index.html'));
-  }
-});
-// ==================== END OF NEW BLOCK ====================
 
 // ==================== DATABASE SETUP ====================
 let db;
@@ -83,34 +39,22 @@ let githubSync;
 let bybitAssets;
 
 // ==================== DATABASE RELOAD FUNCTION ====================
-// ⚠️ IMPORTANT: This MUST be defined before it's used
 async function reloadDatabase(dbFile) {
   try {
     console.log('🔄 Reloading database from file...');
     
-    // Create new database instance from the file data
     const newDb = new SQL.Database(new Uint8Array(dbFile));
     
-    // Verify the new database has data
     const txCheck = newDb.exec("SELECT COUNT(*) FROM transactions");
     const txCount = txCheck[0]?.values[0][0] || 0;
     console.log(`📊 New database has ${txCount} transactions`);
     
-    // Replace the global database instance
     db = newDb;
-    
-    // Recreate ledger with new database
     ledger = new Ledger(db);
-    
-    // Update githubSync with new database
     githubSync = new GitHubSync(db, ledger);
-    
-    // Update bybitAssets with new database
     bybitAssets = new BybitAssets(db);
     
     console.log('✅ Database reloaded successfully');
-    
-    // Save the new database to file (backup)
     await saveDatabaseToFile();
     
     return true;
@@ -122,7 +66,6 @@ async function reloadDatabase(dbFile) {
 
 async function initDatabase() {
   try {
-    // Look for WASM file
     const possiblePaths = [
       path.join(__dirname, 'node_modules/sql.js/dist/sql-wasm.wasm'),
       path.join(__dirname, '../node_modules/sql.js/dist/sql-wasm.wasm'),
@@ -138,7 +81,7 @@ async function initDatabase() {
     }
     
     if (!wasmPath) {
-      console.log('❌ sql-wasm.wasm not found. Please run: npm install sql.js');
+      console.log('❌ sql-wasm.wasm not found');
       process.exit(1);
     }
     
@@ -168,7 +111,6 @@ async function initDatabase() {
     githubSync = new GitHubSync(db, ledger);
     bybitAssets = new BybitAssets(db);
     
-    // Auto-save every 30 seconds
     setInterval(saveDatabaseToFile, 30000);
     
     console.log('✅ Database initialized');
@@ -177,28 +119,6 @@ async function initDatabase() {
     console.error('❌ Database error:', error);
     process.exit(1);
   }
-}
-
-// ==================== DATABASE HELPER ====================
-// Add connection timeout and retry logic
-const QUERY_TIMEOUT = 5000; // 5 seconds
-
-// Helper function for safe queries
-async function safeQuery(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      reject(new Error('Query timeout after ' + QUERY_TIMEOUT + 'ms'));
-    }, QUERY_TIMEOUT);
-    
-    try {
-      const result = db.exec(sql, params);
-      clearTimeout(timeout);
-      resolve(result);
-    } catch (error) {
-      clearTimeout(timeout);
-      reject(error);
-    }
-  });
 }
 
 async function createTables() {
@@ -276,11 +196,11 @@ async function createTables() {
   `);
   
   const defaultAssets = [
-    ['BTC', 1, 'Bitcoin', '/assets/logos/BTC.png'],
-    ['ETH', 1, 'Ethereum', '/assets/logos/ETH.png'],
-    ['SOL', 1, 'Solana', '/assets/logos/SOL.png'],
-    ['BNB', 1, 'BNB', '/assets/logos/BNB.png'],
-    ['USDT', 1, 'Tether', '/assets/logos/USDT.png']
+    ['BTC', 1, 'Bitcoin', '/assets/logos/BTC.svg'],
+    ['ETH', 1, 'Ethereum', '/assets/logos/ETH.svg'],
+    ['SOL', 1, 'Solana', '/assets/logos/SOL.svg'],
+    ['BNB', 1, 'BNB', '/assets/logos/BNB.svg'],
+    ['USDT', 1, 'Tether', '/assets/logos/USDT.svg']
   ];
   
   defaultAssets.forEach(([symbol, enabled, name, logo]) => {
@@ -312,7 +232,7 @@ async function saveDatabaseToFile() {
   }
 }
 
-// ==================== BYBIT WEBSOCKET ====================
+// ==================== BYBIT WEBSOCKET - FIXED VERSION ====================
 class BybitWebSocket {
   constructor() {
     this.ws = null;
@@ -328,70 +248,72 @@ class BybitWebSocket {
   }
   
   connect() {
-  this.connectionStatus = 'connecting';
-  this.notifyStatusListeners();
-  
-  this.ws = new WebSocket('wss://stream.bybit.com/v5/public/spot');
-  
-  this.ws.on('open', () => {
-    console.log('🔌 Bybit WebSocket connected');
-    this.connectionStatus = 'connected';
-    this.reconnectAttempts = 0;
-    this.reconnectDelay = 1000;
-    this.lastUpdateTime = Date.now();
+    this.connectionStatus = 'connecting';
     this.notifyStatusListeners();
     
-    // CRITICAL FIX: Send ping every 15 seconds to keep connection alive
-    this.pingInterval = setInterval(() => {
-      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-        const pingMsg = JSON.stringify({ op: 'ping' });
-        this.ws.send(pingMsg);
-        console.log('📤 Ping sent to Bybit'); // Optional: remove in production
-      }
-    }, 15000); // 15 seconds (Bybit requires < 20 seconds)
+    this.ws = new WebSocket('wss://stream.bybit.com/v5/public/spot');
     
-    if (this.subscriptions.size > 0) {
-      this.subscribe([...this.subscriptions]);
-    }
-  });
-  
-  this.ws.on('message', (data) => {
-    try {
-      const message = JSON.parse(data);
+    this.ws.on('open', () => {
+      console.log('🔌 Bybit WebSocket connected');
+      this.connectionStatus = 'connected';
+      this.reconnectAttempts = 0;
+      this.reconnectDelay = 1000;
+      this.lastUpdateTime = Date.now();
+      this.notifyStatusListeners();
       
-      // Handle pong responses
-      if (message.op === 'pong') {
-        console.log('📥 Pong received from Bybit'); // Optional: remove in production
-        return;
+      this.pingInterval = setInterval(() => {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+          const pingMsg = JSON.stringify({ op: 'ping' });
+          this.ws.send(pingMsg);
+        }
+      }, 15000);
+      
+      // Subscribe to any previously subscribed symbols
+      if (this.subscriptions.size > 0) {
+        this.subscribe([...this.subscriptions]);
+      }
+    });
+    
+    this.ws.on('message', (data) => {
+      try {
+        const message = JSON.parse(data);
+        this.handleMessage(message);
+      } catch (error) {
+        console.error('Error parsing message:', error);
+      }
+    });
+    
+    this.ws.on('close', (code, reason) => {
+      console.log(`🔌 WebSocket disconnected (code: ${code}, reason: ${reason})`);
+      this.connectionStatus = 'disconnected';
+      this.notifyStatusListeners();
+      
+      if (this.pingInterval) {
+        clearInterval(this.pingInterval);
+        this.pingInterval = null;
       }
       
-      this.handleMessage(message);
-    } catch (error) {
-      console.error('Error parsing message:', error);
-    }
-  });
-  
-  this.ws.on('close', (code, reason) => {
-    console.log(`🔌 WebSocket disconnected (code: ${code}, reason: ${reason})`);
-    this.connectionStatus = 'disconnected';
-    this.notifyStatusListeners();
+      this.reconnect();
+    });
     
-    if (this.pingInterval) {
-      clearInterval(this.pingInterval);
-      this.pingInterval = null;
-    }
-    
-    this.reconnect();
-  });
-  
-  this.ws.on('error', (error) => {
-    console.error('WebSocket error:', error.message);
-  });
-}
+    this.ws.on('error', (error) => {
+      console.error('WebSocket error:', error.message);
+    });
+  }
   
   handleMessage(message) {
-    if (message.op === 'pong') return;
+    // Handle pong responses
+    if (message.op === 'pong') {
+      return;
+    }
     
+    // Handle subscription confirmation
+    if (message.success === true) {
+      console.log(`✅ Subscription successful: ${message.ret_msg || ''}`);
+      return;
+    }
+    
+    // Handle ticker data
     if (message.topic && message.topic.startsWith('tickers.')) {
       const symbol = message.topic.split('.')[1].replace('USDT', '');
       if (message.data) {
@@ -405,27 +327,35 @@ class BybitWebSocket {
         });
         
         this.lastUpdateTime = Date.now();
+        console.log(`📊 Price: ${symbol} = $${price.toString()}`);
       }
     }
   }
   
   subscribe(symbols) {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      symbols.forEach(s => this.subscriptions.add(s));
+      // Store subscriptions for when connection is ready
+      symbols.forEach(s => {
+        if (s !== 'USDT') this.subscriptions.add(s);
+      });
       return;
     }
     
-    const validSymbols = symbols.filter(s => s !== 'USDT');
+    const validSymbols = symbols.filter(s => s !== 'USDT' && s);
     if (validSymbols.length === 0) return;
+    
+    const args = validSymbols.map(s => `tickers.${s}USDT`);
     
     const subscriptionMessage = {
       op: 'subscribe',
-      args: validSymbols.map(s => `tickers.${s}USDT`)
+      args: args
     };
     
+    console.log(`📡 Subscribing to: ${validSymbols.join(', ')}`);
     this.ws.send(JSON.stringify(subscriptionMessage));
+    
+    // Add to stored subscriptions
     validSymbols.forEach(s => this.subscriptions.add(s));
-    console.log(`📡 Subscribed to: ${validSymbols.join(', ')}`);
   }
   
   unsubscribe(symbols) {
@@ -497,7 +427,26 @@ class BybitWebSocket {
 const bybitWS = new BybitWebSocket();
 bybitWS.connect();
 
-// ==================== HEALTH ROUTE ====================
+// ==================== API ROUTES ====================
+
+// Test route
+app.get('/test', (req, res) => {
+  console.log('✅ Test route accessed!');
+  res.json({ message: 'Backend is working!', time: Date.now() });
+});
+
+// Debug route to check WebSocket status
+app.get('/api/debug/ws', (req, res) => {
+  res.json({
+    status: bybitWS.getStatus(),
+    subscriptions: Array.from(bybitWS.subscriptions),
+    priceCount: bybitWS.priceData.size,
+    prices: Object.fromEntries(bybitWS.priceData),
+    lastUpdate: bybitWS.getLastUpdateTime()
+  });
+});
+
+// Health route
 app.get('/api/health', (req, res) => {
   console.log('📡 /api/health called');
   try {
@@ -513,41 +462,11 @@ app.get('/api/health', (req, res) => {
   }
 });
 
-app.get('/api/assets', async (req, res) => {
-  console.log('📡 /api/assets called'); // Add this log
-  try {
-    const assets = db.exec(`
-      SELECT symbol, enabled, display_name, logo_path 
-      FROM asset_settings 
-      ORDER BY symbol
-    `);
-    
-    const result = [];
-    if (assets[0]) {
-      const columns = assets[0].columns;
-      assets[0].values.forEach(row => {
-        const asset = {};
-        columns.forEach((col, i) => {
-          asset[col] = row[i];
-        });
-        result.push(asset);
-      });
-    }
-    
-    console.log(`✅ /api/assets returning ${result.length} assets`);
-    res.json(result);
-  } catch (error) {
-    console.error('❌ /api/assets error:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// ==================== OPTIMIZED ASSET ROUTE ====================
+// Assets routes
 app.get('/api/assets', async (req, res) => {
   console.log('📡 /api/assets called');
   try {
-    // Use the safeQuery helper instead of direct db.exec
-    const result = await safeQuery(`
+    const result = db.exec(`
       SELECT symbol, enabled, display_name, logo_path 
       FROM asset_settings 
       ORDER BY symbol
@@ -614,14 +533,9 @@ app.post('/api/assets/enabled', async (req, res) => {
       db.run(`UPDATE asset_settings SET enabled = 1 WHERE symbol = ?`, [symbol]);
     });
     
+    // Update WebSocket subscriptions
     if (bybitWS.getStatus() === 'connected') {
-      const currentSubs = [...bybitWS.subscriptions];
-      if (currentSubs.length > 0) {
-        bybitWS.unsubscribe(currentSubs);
-      }
-      if (enabled.length > 0) {
-        bybitWS.subscribe(enabled);
-      }
+      bybitWS.subscribe(enabled);
     }
     
     res.json({ success: true });
@@ -639,8 +553,7 @@ app.post('/api/assets/discover', async (req, res) => {
   }
 });
 
-// ==================== PRICE ROUTES ====================
-
+// Price routes
 app.get('/api/prices', (req, res) => {
   try {
     const assets = db.exec(`SELECT symbol FROM asset_settings WHERE enabled = 1`);
@@ -683,8 +596,7 @@ app.get('/api/market/ticker/:symbol', async (req, res) => {
   }
 });
 
-// ==================== TRANSACTION ROUTES ====================
-
+// Transaction routes
 app.get('/api/transactions', (req, res) => {
   try {
     const result = db.exec(`
@@ -778,8 +690,7 @@ app.delete('/api/transactions/:id', (req, res) => {
   }
 });
 
-// ==================== PORTFOLIO ROUTES ====================
-
+// Portfolio routes
 app.get('/api/portfolio/summary', (req, res) => {
   try {
     const summary = ledger.getPortfolioSummary(bybitWS);
@@ -807,8 +718,7 @@ app.get('/api/portfolio/trades', (req, res) => {
   }
 });
 
-// ==================== TRADE PLAN ROUTES ====================
-
+// Plan routes
 app.post('/api/plans', (req, res) => {
   try {
     const plan = req.body;
@@ -892,8 +802,7 @@ app.delete('/api/plans/:id', (req, res) => {
   }
 });
 
-// ==================== TIMER ROUTES ====================
-
+// Timer routes
 app.post('/api/cycles/:id/timer/start', (req, res) => {
   try {
     const { id } = req.params;
@@ -914,8 +823,7 @@ app.post('/api/cycles/:id/timer/stop', (req, res) => {
   }
 });
 
-// ==================== SETTINGS ROUTES ====================
-
+// Settings routes
 app.get('/api/settings', (req, res) => {
   try {
     const result = db.exec(`SELECT key, value FROM settings`);
@@ -954,9 +862,7 @@ app.post('/api/settings', (req, res) => {
   }
 });
 
-// ==================== GITHUB SYNC ROUTES ====================
-// ⚠️ IMPORTANT: These must come AFTER reloadDatabase is defined
-
+// GitHub sync routes
 app.post('/api/sync', async (req, res) => {
   try {
     const success = await githubSync.sync();
@@ -966,18 +872,15 @@ app.post('/api/sync', async (req, res) => {
   }
 });
 
-// FIXED RESTORE ROUTE - Uses the reloadDatabase function defined above
 app.post('/api/restore', async (req, res) => {
   try {
     console.log('🔄 Restore endpoint called');
     
-    // Pass the reloadDatabase function as callback
     const result = await githubSync.restore(reloadDatabase);
     
     if (result.success) {
       console.log('✅ Restore completed successfully');
       
-      // Verify the restore worked by getting counts
       const txResult = db.exec("SELECT COUNT(*) FROM transactions");
       const txCount = txResult[0]?.values[0][0] || 0;
       
@@ -1004,19 +907,16 @@ app.post('/api/restore', async (req, res) => {
   }
 });
 
-// ==================== MEMORY FORMAT ====================
-
+// Format memory route
 app.post('/api/format', async (req, res) => {
   try {
     console.log('🔄 Formatting application memory...');
     
-    // Get all table names first to avoid errors
     const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table'");
     const tableNames = tables[0]?.values.map(row => row[0]) || [];
     console.log('📊 Found tables:', tableNames);
     
-    // Safely delete from known tables
-    const tablesToClear = ['transactions', 'trade_cycles', 'trade_plans', 'trade_plots', 'plans'];
+    const tablesToClear = ['transactions', 'trade_cycles', 'trade_plans'];
     
     for (const table of tablesToClear) {
       if (tableNames.includes(table)) {
@@ -1025,12 +925,9 @@ app.post('/api/format', async (req, res) => {
       }
     }
     
-    // Reset asset settings if table exists
     if (tableNames.includes('asset_settings')) {
-      // Disable all assets
       db.run(`UPDATE asset_settings SET enabled = 0`);
       
-      // Re-enable default assets
       const defaultEnabled = ['BTC', 'ETH', 'SOL', 'BNB', 'USDT'];
       defaultEnabled.forEach(symbol => {
         db.run(`UPDATE asset_settings SET enabled = 1 WHERE symbol = ?`, [symbol]);
@@ -1038,7 +935,6 @@ app.post('/api/format', async (req, res) => {
       console.log('✅ Asset settings reset');
     }
     
-    // Reset settings if table exists
     if (tableNames.includes('settings')) {
       db.run(`UPDATE settings SET value = '' WHERE key = 'github_token'`);
       db.run(`UPDATE settings SET value = '' WHERE key = 'github_repo'`);
@@ -1046,7 +942,6 @@ app.post('/api/format', async (req, res) => {
       console.log('✅ GitHub settings cleared');
     }
     
-    // Save database to file
     await saveDatabaseToFile();
     console.log('✅ Database saved to disk');
     
@@ -1054,39 +949,40 @@ app.post('/api/format', async (req, res) => {
     
   } catch (error) {
     console.error('❌ Format error:', error.message);
-    console.error('Stack:', error.stack);
     res.status(500).json({ error: error.message });
   }
 });
 
+// For any route not matching an API endpoint, serve index.html
+app.get('*', (req, res) => {
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(__dirname, '../frontend/index.html'));
+  }
+});
 
 // ==================== START SERVER ====================
 
 async function startServer() {
   await initDatabase();
   
-  // Disable auto GitHub sync - will be manual only
-  // cron.schedule('*/5 * * * *', async () => {
-  //   console.log('🔄 Running scheduled GitHub sync...');
-  //   await githubSync.sync();
-  // });
-  
-  // Disable auto asset discovery - manual only via button
-  // cron.schedule('0 0 * * *', async () => {
-  //   console.log('🔄 Running scheduled asset discovery...');
-  //   await bybitAssets.discoverNewAssets();
-  // });
-  
+  // Wait a bit then subscribe to enabled assets
   setTimeout(() => {
-    const assets = db.exec(`SELECT symbol FROM asset_settings WHERE enabled = 1`);
-    if (assets[0]) {
-      const enabledAssets = assets[0].values.map(row => row[0]);
-      bybitWS.subscribe(enabledAssets);
+    try {
+      const assets = db.exec(`SELECT symbol FROM asset_settings WHERE enabled = 1`);
+      if (assets[0] && assets[0].values.length > 0) {
+        const enabledAssets = assets[0].values.map(row => row[0]);
+        console.log(`🔄 Subscribing to enabled assets: ${enabledAssets.join(', ')}`);
+        bybitWS.subscribe(enabledAssets);
+      } else {
+        console.log('⚠️ No enabled assets found');
+      }
+    } catch (error) {
+      console.error('❌ Error subscribing to assets:', error);
     }
-  }, 2000);
+  }, 3000);
   
   app.listen(PORT, '0.0.0.0', () => {
-  console.log(`
+    console.log(`
 ╔════════════════════════════════════════╗
 ║   ENVY Server Running                  ║
 ║   📍 http://localhost:${PORT}            ║
@@ -1096,14 +992,6 @@ async function startServer() {
 ╚════════════════════════════════════════╝
     `);
   });
-}
-
-// Disable scheduled GitHub sync on Pxxl (git not available)
-if (process.env.NODE_ENV === 'production') {
-  console.log('⏰ GitHub sync is manual only on Pxxl (git not installed)');
-  // You can still use manual sync if you click the button
-} else {
-  console.log('⏰ GitHub sync is manual only (development mode)');
 }
 
 startServer().catch(console.error);
