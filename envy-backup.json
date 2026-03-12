@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": 1773346671622,
+  "timestamp": 1773347103794,
   "tables": {
     "transactions": {
       "columns": [
@@ -129,7 +129,7 @@
         ],
         [
           "BNB",
-          0,
+          1,
           "BNB",
           "/assets/logos/BNB.png",
           null
@@ -150,7 +150,7 @@
         ],
         [
           "DOT",
-          0,
+          1,
           "DOT",
           "/assets/logos/DOT.png",
           1773154998941
@@ -171,7 +171,7 @@
         ],
         [
           "DOGE",
-          0,
+          1,
           "DOGE",
           "/assets/logos/DOGE.png",
           1773155000795
@@ -199,7 +199,7 @@
         ],
         [
           "DYDX",
-          0,
+          1,
           "DYDX",
           "/assets/logos/DYDX.png",
           1773155001460
@@ -262,7 +262,7 @@
         ],
         [
           "ADA",
-          1,
+          0,
           "ADA",
           "/assets/logos/ADA.png",
           1773155008633
@@ -283,7 +283,7 @@
         ],
         [
           "BCH",
-          0,
+          1,
           "BCH",
           "/assets/logos/BCH.png",
           1773155009404
@@ -374,7 +374,7 @@
         ],
         [
           "SHIB",
-          0,
+          1,
           "SHIB",
           "/assets/logos/SHIB.png",
           1773155014314
@@ -409,7 +409,7 @@
         ],
         [
           "AVAX",
-          0,
+          1,
           "AVAX",
           "/assets/logos/AVAX.png",
           1773155014734
@@ -990,7 +990,7 @@
         ],
         [
           "AFC",
-          1,
+          0,
           "AFC",
           "/assets/logos/AFC.svg",
           1773155049506
@@ -2278,7 +2278,7 @@
         ],
         [
           "AERO",
-          1,
+          0,
           "AERO",
           "/assets/logos/AERO.svg",
           1773159540743
@@ -3415,12 +3415,12 @@
         [
           "github_token",
           "[MASKED]",
-          1773346652972
+          1773347097259
         ],
         [
           "github_repo",
           "Star-Quests/ENVY",
-          1773346652972
+          1773347097259
         ],
         [
           "last_sync_time",
