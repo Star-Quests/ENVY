@@ -948,7 +948,7 @@ app.post('/api/format', async (req, res) => {
 });
 
 // ==================== SERVE FRONTEND (Add this block) ====================
-const path = require('path'); // Make sure this is at the top of your file if it's not already there
+
 
 // Serve static files from the frontend directory
 app.use(express.static(path.join(__dirname, '../frontend')));
