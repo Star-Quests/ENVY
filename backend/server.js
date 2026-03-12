@@ -946,6 +946,22 @@ app.post('/api/format', async (req, res) => {
   }
 });
 
+// ==================== SERVE FRONTEND (Add this block) ====================
+const path = require('path'); // Make sure this is at the top of your file if it's not already there
+
+// Serve static files from the frontend directory
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// For any route not matching an API endpoint, serve the index.html file
+// This is crucial for single-page applications like yours
+app.get('*', (req, res) => {
+  // Don't serve index.html for API routes
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(__dirname, '../frontend/index.html'));
+  }
+});
+// ==================== END OF NEW BLOCK ====================
+
 // ==================== START SERVER ====================
 
 async function startServer() {
