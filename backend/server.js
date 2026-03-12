@@ -19,6 +19,7 @@ const BybitAssets = require('./bybitAssets');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+console.log(`🚀 Starting server on port: ${PORT}`);
 
 // ==================== MIDDLEWARE ====================
 app.use(cors());
@@ -987,8 +988,8 @@ async function startServer() {
     }
   }, 2000);
   
-  app.listen(PORT, () => {
-    console.log(`
+  app.listen(PORT, '0.0.0.0', () => {
+  console.log(`
 ╔════════════════════════════════════════╗
 ║   ENVY Server Running                  ║
 ║   📍 http://localhost:${PORT}            ║
