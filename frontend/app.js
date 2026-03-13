@@ -222,19 +222,37 @@ class ENVY {
   }
   
   async init() {
-    console.log('ENVY init started');
-    this.cacheDOM();
-    this.bindEvents();
+  console.log('ENVY init started');
+  this.cacheDOM();
+  this.bindEvents();
 
-    console.log('Creating InterfaceManager');
-    this.interfaceManager = new InterfaceManager(this);
+  console.log('Creating InterfaceManager');
+  this.interfaceManager = new InterfaceManager(this);
 
-    await this.loadAssets();
-    this.startPriceUpdates();
-    this.startStatusChecks();
-    this.loadInitialData();
-    console.log('ENVY init completed');
+  // Add resize handlers
+  window.addEventListener('resize', () => this.handleResize());
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => this.handleResize(), 100);
+  });
+  this.handleResize(); // Call once on init
+
+  await this.loadAssets();
+  this.startPriceUpdates();
+  this.startStatusChecks();
+  this.loadInitialData();
+  console.log('ENVY init completed');
+}
+
+handleResize() {
+  // Fix for mobile viewport height
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+  
+  // Re-apply interface settings to ensure proper display
+  if (this.interfaceManager) {
+    this.interfaceManager.applySettings();
   }
+}
   
   cacheDOM() {
     // Navigation
