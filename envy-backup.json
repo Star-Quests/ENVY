@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": 1773352596151,
+  "timestamp": 1773827867358,
   "tables": {
     "transactions": {
       "columns": [
@@ -3415,12 +3415,12 @@
         [
           "github_token",
           "[MASKED]",
-          1773352589569
+          1773827861638
         ],
         [
           "github_repo",
           "Star-Quests/ENVY",
-          1773352589570
+          1773827861638
         ],
         [
           "last_sync_time",
