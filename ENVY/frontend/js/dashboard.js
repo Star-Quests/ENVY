@@ -302,10 +302,22 @@ async fetchBybitPricesNow() {
             });
         });
         
-        document.getElementById('notificationBtn')?.addEventListener('click', () => {
-            const panel = document.getElementById('notificationPanel');
-            if (panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-        });
+                const notifBtn = document.getElementById('notificationBtn');
+        const notifPanel = document.getElementById('notificationPanel');
+        
+        if (notifBtn && notifPanel) {
+            notifBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                notifPanel.style.display = notifPanel.style.display === 'none' ? 'block' : 'none';
+            });
+            
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!notifPanel.contains(e.target) && e.target !== notifBtn) {
+                    notifPanel.style.display = 'none';
+                }
+            });
+        }
         
         document.getElementById('clearNotifications')?.addEventListener('click', () => {
             notificationSystem?.clearAll();
