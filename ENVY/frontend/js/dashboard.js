@@ -226,30 +226,30 @@ class DashboardManager {
     startPricePolling() {
     if (this.priceUpdateInterval) clearInterval(this.priceUpdateInterval);
     
-    this.fetchBybitPrices();
-    this.priceUpdateInterval = setInterval(() => this.fetchBybitPrices(), 5000);
+    this.fetchBybitPricesNow();
+    this.priceUpdateInterval = setInterval(() => this.fetchBybitPricesNow(), 5000);
 }
 
-async fetchBybitPrices() {
+async fetchBybitPricesNow() {
     try {
-        const symbols = this.favoriteAssets.map(s => s + 'USDT').join(',');
-        const res = await fetch(`/api/proxy/bybit-prices?symbols=${symbols}`);
-        const data = await res.json();
-        
-        if (data.retCode === 0 && data.result && data.result.list) {
-            data.result.list.forEach(ticker => {
-                const symbol = ticker.symbol.replace('USDT', '');
+        // Fetch each symbol individually
+        for (const symbol of this.favoriteAssets) {
+            const res = await fetch(`/api/proxy/bybit-prices?symbols=${symbol}USDT`);
+            const data = await res.json();
+            
+            if (data.retCode === 0 && data.result && data.result.list) {
+                const ticker = data.result.list[0];
                 this.cryptoPrices[symbol] = {
                     price: parseFloat(ticker.lastPrice) || 0,
                     change24h: (parseFloat(ticker.price24hPcnt) * 100) || 0,
                     high24h: parseFloat(ticker.highPrice24h) || 0,
                     low24h: parseFloat(ticker.lowPrice24h) || 0
                 };
-            });
-            this.renderCryptoFeed();
-            this.updateHoldingsWithLivePrices();
-            this.updatePortfolioSummary();
+            }
         }
+        this.renderCryptoFeed();
+        this.updateHoldingsWithLivePrices();
+        this.updatePortfolioSummary();
     } catch (e) {
         console.error('Bybit fetch error:', e);
     }
