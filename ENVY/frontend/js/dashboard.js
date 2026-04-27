@@ -224,33 +224,48 @@ class DashboardManager {
 
     
     startPricePolling() {
-        if (this.priceUpdateInterval) clearInterval(this.priceUpdateInterval);
+    if (this.priceUpdateInterval) clearInterval(this.priceUpdateInterval);
+    
+    // Fetch prices immediately
+    this.fetchPricesNow();
+    
+    // Then poll every 5 seconds
+    this.priceUpdateInterval = setInterval(() => this.fetchPricesNow(), 5000);
+}
+
+async fetchPricesNow() {
+    try {
+        // Use CoinGecko's free API (not blocked in Nigeria)
+        const ids = this.favoriteAssets.map(s => {
+            const map = { 'BTC': 'bitcoin', 'ETH': 'ethereum', 'SOL': 'solana', 'BNB': 'binancecoin', 'XRP': 'ripple', 'ADA': 'cardano', 'DOGE': 'dogecoin' };
+            return map[s] || s.toLowerCase();
+        }).join(',');
         
-        this.priceUpdateInterval = setInterval(async () => {
-            try {
-                const symbols = this.favoriteAssets.map(s => s + 'USDT').join(',');
-                const res = await fetch(`/api/proxy/bybit-prices?symbols=${symbols}`);
-                const data = await res.json();
-                
-                if (data.retCode === 0 && data.result && data.result.list) {
-                    data.result.list.forEach(ticker => {
-                        const symbol = ticker.symbol.replace('USDT', '');
-                        this.cryptoPrices[symbol] = {
-                            price: parseFloat(ticker.lastPrice) || 0,
-                            change24h: (parseFloat(ticker.price24hPcnt) * 100) || 0,
-                            high24h: parseFloat(ticker.highPrice24h) || 0,
-                            low24h: parseFloat(ticker.lowPrice24h) || 0
-                        };
-                    });
-                    this.renderCryptoFeed();
-                    this.updateHoldingsWithLivePrices();
-                    this.updatePortfolioSummary();
-                }
-            } catch (e) {
-                console.error('Price polling error:', e);
+        const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true`);
+        const data = await res.json();
+        
+        // Map CoinGecko response back to symbols
+        const reverseMap = { 'bitcoin': 'BTC', 'ethereum': 'ETH', 'solana': 'SOL', 'binancecoin': 'BNB', 'ripple': 'XRP', 'cardano': 'ADA', 'dogecoin': 'DOGE' };
+        
+        Object.keys(data).forEach(id => {
+            const symbol = reverseMap[id] || id.toUpperCase();
+            if (data[id]) {
+                this.cryptoPrices[symbol] = {
+                    price: data[id].usd || 0,
+                    change24h: data[id].usd_24h_change || 0,
+                    high24h: data[id].usd * 1.02,
+                    low24h: data[id].usd * 0.98
+                };
             }
-        }, 5000);
+        });
+        
+        this.renderCryptoFeed();
+        this.updateHoldingsWithLivePrices();
+        this.updatePortfolioSummary();
+    } catch (e) {
+        console.error('Price fetch error:', e);
     }
+}
 
     updateGreeting() {
         const el = document.getElementById('userGreeting');
