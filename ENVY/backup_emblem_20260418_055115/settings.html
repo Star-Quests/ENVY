@@ -1,0 +1,848 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+    <meta name="description" content="ENVY Settings - Customize Your Trading Experience">
+    <meta name="theme-color" content="#0A0A0A">
+    
+    <title>Settings | ENVY</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Preload sidebar for faster rendering -->
+    
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/settings.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+</head>
+<body class="dark-theme" data-page="settings">
+    <!-- Animated Background -->
+    <div class="luxury-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+        <div class="noise-overlay"></div>
+    </div>
+    
+    <!-- Connection Status Bar -->
+    <div class="connection-bar" id="connectionBar">
+        <div class="connection-indicator" id="connectionIndicator">
+            <span class="connection-dot"></span>
+            <span class="connection-text">Connected</span>
+        </div>
+        <div class="connection-time" id="connectionTime">
+            <span class="live-badge">● LIVE</span>
+        </div>
+    </div>
+    
+    <!-- Main App Container -->
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar glass-morphism" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-wrapper">
+                    <img src="assets/icons/envy-emblem.svg" alt="ENVY" class="brand-emblem pulse-glow" id="siteEmblem">
+                    <span class="brand-text" id="brandText">ENVY</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M3 12L5 10M5 10L12 3L19 10M5 10V20H9V14H15V20H19V10M19 10L21 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="journal.html" class="nav-item">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 8V12L15 15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span class="nav-text">Journal</span>
+                </a>
+                <a href="planner.html" class="nav-item">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 7H7V9H9V7Z M13 7H11V9H13V7Z M17 7H15V9H17V7Z M9 11H7V13H9V11Z M13 11H11V13H13V11Z M17 11H15V13H17V11Z M9 15H7V17H9V15Z M13 15H11V17H13V15Z M17 15H15V17H17V15Z M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3Z" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span class="nav-text">Planner</span>
+                </a>
+                <a href="settings.html" class="nav-item active">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M19.4 15C18.9 16.1 18.1 17 17.2 17.6L19 20.5C19.2 20.8 19.1 21.2 18.8 21.4C18.6 21.5 18.4 21.6 18.1 21.6C18 21.6 17.9 21.6 17.8 21.5L15 20C14.1 20.3 13.1 20.5 12 20.5C10.9 20.5 9.9 20.3 9 20L6.2 21.5C6.1 21.6 6 21.6 5.9 21.6C5.6 21.6 5.4 21.5 5.2 21.4C4.9 21.2 4.8 20.8 5 20.5L6.8 17.6C5.9 17 5.1 16.1 4.6 15C4.1 13.9 3.9 12.8 3.9 11.6C3.9 10.4 4.2 9.3 4.7 8.2C5.2 7.1 5.9 6.1 6.8 5.4L5.1 2.7C4.9 2.4 5 2 5.3 1.8C5.5 1.7 5.8 1.6 6 1.6C6.1 1.6 6.2 1.6 6.3 1.7L9 3.2C9.9 2.9 10.9 2.7 12 2.7C13.1 2.7 14.1 2.9 15 3.2L17.7 1.7C17.8 1.6 17.9 1.6 18.1 1.6C18.4 1.6 18.6 1.7 18.8 1.8C19.1 2 19.2 2.4 19 2.7L17.2 5.5C18.1 6.1 18.9 7.1 19.4 8.2C19.9 9.3 20.1 10.4 20.1 11.6C20.1 12.8 19.8 13.9 19.4 15Z" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span class="nav-text">Settings</span>
+                </a>
+                <div class="nav-divider"></div>
+                <a href="admin.html" class="nav-item" id="adminLink" style="display: none;">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 15V19M12 5V9M8 8L5 5M16 8L19 5M8 16L5 19M16 16L19 19M3 12H7M17 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span class="nav-text">Admin</span>
+                </a>
+                <a href="#" class="nav-item logout-item" id="logoutBtn">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9M16 17L21 12M21 12L16 7M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="nav-text">Logout</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-profile" id="userProfile">
+                    <img src="assets/icons/user-avatar.svg" alt="User" class="user-avatar" id="userAvatar">
+                    <div class="user-info">
+                        <div class="user-name-wrapper">
+                            <span class="user-name" id="userName">Trader</span>
+                            <span class="user-emblem" id="userEmblem">👤</span>
+                        </div>
+                        <span class="user-greeting" id="userGreeting">Good morning</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="main-content" id="mainContent">
+            <!-- Settings Header -->
+            <header class="dashboard-header glass-morphism">
+                <div class="header-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <h1 class="page-title">Settings</h1>
+                </div>
+                <div class="header-right">
+                    <button class="save-all-btn" id="saveAllSettingsBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16L21 8V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21Z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M17 21V15H7V21M12 7V11" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Save All Changes
+                    </button>
+                    <div class="header-time" id="headerTime"></div>
+                </div>
+            </header>
+            
+            <!-- Settings Content -->
+            <div class="settings-content">
+                <!-- Settings Navigation Tabs -->
+                <div class="settings-tabs glass-morphism">
+                    <button class="tab-btn active" data-tab="appearance">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2Z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 6V18M6 12H18" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Appearance
+                    </button>
+                    <button class="tab-btn" data-tab="trading">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M3 12H21M12 3V21M4 4L20 20M20 4L4 20" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Trading
+                    </button>
+                    <button class="tab-btn" data-tab="data">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3M21 12C21 7.02944 16.9706 3 12 3M21 12H3M12 21C9.79086 21 8 16.9706 8 12C8 7.02944 9.79086 3 12 3C14.2091 3 16 7.02944 16 12C16 16.9706 14.2091 21 12 21Z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Data & Display
+                    </button>
+                    <button class="tab-btn" data-tab="notifications">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Notifications
+                    </button>
+                    <button class="tab-btn" data-tab="account">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Account
+                    </button>
+                    <button class="tab-btn" data-tab="advanced">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 6V12L15 15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Advanced
+                    </button>
+                </div>
+                
+                <!-- Settings Panels -->
+                <div class="settings-panels">
+                    <!-- Appearance Panel -->
+                    <div class="settings-panel active" id="appearance-panel">
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Theme & Colors</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Theme</label>
+                                        <span class="setting-description">Choose your preferred color theme</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <select id="themeSelect" class="setting-select">
+                                            <option value="dark">Dark (Default)</option>
+                                            <option value="light">Light</option>
+                                            <option value="system">System</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Accent Color</label>
+                                        <span class="setting-description">Customize the primary accent color</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <div class="color-picker-wrapper">
+                                            <input type="color" id="accentColorPicker" value="#9CA3AF" class="color-picker">
+                                            <span class="color-value" id="accentColorValue">#9CA3AF</span>
+                                        </div>
+                                        <div class="color-presets">
+                                            <button class="color-preset" data-color="#9CA3AF" style="background: #9CA3AF;" title="Light Grey"></button>
+                                            <button class="color-preset" data-color="#3B82F6" style="background: #3B82F6;" title="Blue"></button>
+                                            <button class="color-preset" data-color="#10B981" style="background: #10B981;" title="Green"></button>
+                                            <button class="color-preset" data-color="#F59E0B" style="background: #F59E0B;" title="Orange"></button>
+                                            <button class="color-preset" data-color="#EF4444" style="background: #EF4444;" title="Red"></button>
+                                            <button class="color-preset" data-color="#8B5CF6" style="background: #8B5CF6;" title="Purple"></button>
+                                            <button class="color-preset" data-color="#EC4899" style="background: #EC4899;" title="Pink"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Typography</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Font Style</label>
+                                        <span class="setting-description">Choose your preferred font</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <select id="fontStyleSelect" class="setting-select">
+                                            <option value="Inter">Inter (Default)</option>
+                                            <option value="system-ui">System UI</option>
+                                            <option value="Roboto">Roboto</option>
+                                            <option value="Open Sans">Open Sans</option>
+                                            <option value="Poppins">Poppins</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Font Size</label>
+                                        <span class="setting-description">Adjust base font size</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <div class="slider-wrapper">
+                                            <input type="range" id="fontSizeSlider" min="12" max="20" value="16" step="1">
+                                            <span class="slider-value" id="fontSizeValue">16px</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Glass Morphism</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Glass Intensity</label>
+                                        <span class="setting-description">Adjust transparency and blur effect</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <div class="slider-wrapper">
+                                            <input type="range" id="glassIntensitySlider" min="0" max="100" value="50" step="5">
+                                            <span class="slider-value" id="glassIntensityValue">50%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Border Radius</label>
+                                        <span class="setting-description">Adjust corner roundness</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <div class="slider-wrapper">
+                                            <input type="range" id="borderRadiusSlider" min="0" max="24" value="8" step="2">
+                                            <span class="slider-value" id="borderRadiusValue">8px</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Layout Density</label>
+                                        <span class="setting-description">Adjust spacing between elements</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <select id="layoutDensitySelect" class="setting-select">
+                                            <option value="compact">Compact</option>
+                                            <option value="comfortable" selected>Comfortable</option>
+                                            <option value="spacious">Spacious</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Sidebar</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Default Sidebar State</label>
+                                        <span class="setting-description">Choose how the sidebar appears by default</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="sidebarCollapsedToggle">
+                                            <span class="toggle-slider"></span>
+                                            <span class="toggle-label">Collapsed (icons only)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Trading Panel -->
+                    <div class="settings-panel" id="trading-panel">
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Trading Mode</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Default Trading Mode</label>
+                                        <span class="setting-description">Choose between Spot or Futures trading</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <div class="mode-selector">
+                                            <button class="mode-btn" data-mode="spot" id="spotModeBtn">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                                    <path d="M12 6V18M6 12H18" stroke="currentColor" stroke-width="2"/>
+                                                </svg>
+                                                Spot
+                                            </button>
+                                            <button class="mode-btn" data-mode="futures" id="futuresModeBtn">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M3 12H21M12 3V21M4 4L20 20M20 4L4 20" stroke="currentColor" stroke-width="2"/>
+                                                </svg>
+                                                Futures
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Favorite Assets</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Tracked Cryptocurrencies</label>
+                                        <span class="setting-description">Select assets to display on your dashboard</span>
+                                    </div>
+                                    <div class="setting-control full-width">
+                                        <div class="asset-selector-container">
+                                            <div class="selected-favorites" id="selectedFavorites"></div>
+                                            <button class="add-asset-btn" id="addFavoriteAssetBtn">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M12 4V20M20 12H4" stroke="currentColor" stroke-width="2"/>
+                                                </svg>
+                                                Add Asset
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Default Fee Rate</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Trading Fee Percentage</label>
+                                        <span class="setting-description">Auto-fill fee when adding trades</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <div class="input-with-suffix">
+                                            <input type="number" id="defaultFeeInput" class="setting-input" min="0" max="100" step="0.01" value="0.10">
+                                            <span class="input-suffix">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Dashboard Visuals</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Holdings Sorting</label>
+                                        <span class="setting-description">Default sort order for holdings table</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <select id="holdingsSortSelect" class="setting-select">
+                                            <option value="highest_value">Highest Value</option>
+                                            <option value="highest_profit">Highest Profit</option>
+                                            <option value="highest_loss">Highest Loss</option>
+                                            <option value="alphabetical">Alphabetical</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Row Highlighting</label>
+                                        <span class="setting-description">Color-code profit/loss rows</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="rowHighlightingToggle" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Animation Intensity</label>
+                                        <span class="setting-description">Adjust animation speed and effects</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <div class="slider-wrapper">
+                                            <input type="range" id="animationIntensitySlider" min="0" max="100" value="50" step="10">
+                                            <span class="slider-value" id="animationIntensityValue">50%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Data & Display Panel -->
+                    <div class="settings-panel" id="data-panel">
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Data Entry Preferences</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Default Trade Form Mode</label>
+                                        <span class="setting-description">Simple or Advanced form layout</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <select id="formModeSelect" class="setting-select">
+                                            <option value="simple">Simple</option>
+                                            <option value="advanced">Advanced</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Auto-Clear Form</label>
+                                        <span class="setting-description">Clear form after adding a trade</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="autoClearFormToggle" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Decimal Precision</label>
+                                        <span class="setting-description">Number of decimal places to display</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <select id="decimalPrecisionSelect" class="setting-select">
+                                            <option value="2">2 decimals</option>
+                                            <option value="4">4 decimals</option>
+                                            <option value="6">6 decimals</option>
+                                            <option value="8">8 decimals</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Timer & Duration Settings</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Timer Display Format</label>
+                                        <span class="setting-description">How timers are displayed</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <select id="timerFormatSelect" class="setting-select">
+                                            <option value="full">Full (Days:Hours:Minutes)</option>
+                                            <option value="compact">Compact (2d 14h)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Trade Age Color Coding</label>
+                                        <span class="setting-description">Timer changes color as trade ages</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="tradeAgeColorToggle" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Planner Defaults</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Default Retracement Unit</label>
+                                        <span class="setting-description">Display trailing stop in percentage or USDT</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <select id="retracementUnitSelect" class="setting-select">
+                                            <option value="percentage">Percentage (%)</option>
+                                            <option value="usdt">USDT</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Export Preferences</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Export Format</label>
+                                        <span class="setting-description">Default format for journal exports</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <select id="exportFormatSelect" class="setting-select">
+                                            <option value="csv">CSV</option>
+                                            <option value="pdf">PDF Report</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Notifications Panel -->
+                    <div class="settings-panel" id="notifications-panel">
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Sound Notifications</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Enable Sounds</label>
+                                        <span class="setting-description">Play sounds for trade actions and alerts</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="soundEnabledToggle" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Test Sound</label>
+                                        <span class="setting-description">Preview notification sounds</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <button class="test-sound-btn" id="testSuccessSound">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                <path d="M5 12L10 17L19 8" stroke="currentColor" stroke-width="2"/>
+                                            </svg>
+                                            Success
+                                        </button>
+                                        <button class="test-sound-btn" id="testErrorSound">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2"/>
+                                            </svg>
+                                            Error
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Account Panel -->
+                    <div class="settings-panel" id="account-panel">
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Profile Information</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Profile Picture</label>
+                                        <span class="setting-description">Upload a profile picture</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <div class="avatar-upload">
+                                            <img src="assets/icons/user-avatar.svg" alt="Avatar" id="profileAvatarPreview" class="avatar-preview">
+                                            <button class="upload-avatar-btn" id="uploadAvatarBtn">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M12 4V20M20 12H4" stroke="currentColor" stroke-width="2"/>
+                                                </svg>
+                                                Upload
+                                            </button>
+                                            <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Full Name</label>
+                                        <span class="setting-description">Your display name</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <input type="text" id="fullNameInput" class="setting-input" placeholder="Enter your name">
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Email</label>
+                                        <span class="setting-description">Your account email (cannot be changed)</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <input type="email" id="emailInput" class="setting-input" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Privacy</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Profile Visibility</label>
+                                        <span class="setting-description">Control who can see your profile</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <select id="profileVisibilitySelect" class="setting-select">
+                                            <option value="private">Private</option>
+                                            <option value="public">Public</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Password</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Change Password</label>
+                                        <span class="setting-description">Update your account password</span>
+                                    </div>
+                                    <div class="setting-control full-width">
+                                        <form id="passwordChangeForm" class="password-form">
+                                            <div class="form-row">
+                                                <input type="password" id="currentPassword" class="setting-input" placeholder="Current password">
+                                            </div>
+                                            <div class="form-row">
+                                                <input type="password" id="newPassword" class="setting-input" placeholder="New password">
+                                            </div>
+                                            <div class="form-row">
+                                                <input type="password" id="confirmPassword" class="setting-input" placeholder="Confirm new password">
+                                            </div>
+                                            <button type="submit" class="btn-primary" id="changePasswordBtn">Update Password</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Advanced Panel -->
+                    <div class="settings-panel" id="advanced-panel">
+                        <div class="panel-section glass-morphism">
+                            <h2 class="section-title">Account Reset</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Reset Configuration</label>
+                                        <span class="setting-description">Reset all settings to default without deleting trade history</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <button class="btn-warning" id="resetSettingsBtn">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                <path d="M3 12H21M12 3V21" stroke="currentColor" stroke-width="2"/>
+                                            </svg>
+                                            Reset to Defaults
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="panel-section glass-morphism warning-section">
+                            <h2 class="section-title">Data Management</h2>
+                            
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label">Export All Data</label>
+                                        <span class="setting-description">Download all your trading data</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <button class="btn-secondary" id="exportAllDataBtn">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                <path d="M12 16V4M12 4L8 8M12 4L16 8M4 20H20" stroke="currentColor" stroke-width="2"/>
+                                            </svg>
+                                            Export Data
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label danger-label">Delete All Trades</label>
+                                        <span class="setting-description">Permanently delete all your trade history</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <button class="btn-danger" id="deleteAllTradesBtn">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                <path d="M4 7H20M10 11V17M14 11V17M5 7L6 19C6 20.1046 6.89543 21 8 21H16C17.1046 21 18 20.1046 18 19L19 7M9 7V4C9 3.44772 9.44772 3 10 3H14C14.5523 3 15 3.44772 15 4V7" stroke="currentColor" stroke-width="2"/>
+                                            </svg>
+                                            Delete All Trades
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <label class="setting-label danger-label">Delete Account</label>
+                                        <span class="setting-description">Permanently delete your account and all data</span>
+                                    </div>
+                                    <div class="setting-control">
+                                        <button class="btn-danger" id="deleteAccountBtn">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                <path d="M12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2Z" stroke="currentColor" stroke-width="2"/>
+                                                <path d="M18 6L6 18" stroke="currentColor" stroke-width="2"/>
+                                            </svg>
+                                            Delete Account
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Asset Selection Modal -->
+    <div class="modal" id="assetSelectionModal">
+        <div class="modal-content glass-morphism">
+            <div class="modal-header">
+                <h3>Add Favorite Asset</h3>
+                <button class="modal-close" id="closeAssetModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="asset-search">
+                    <input type="text" id="modalAssetSearch" placeholder="Search for any cryptocurrency..." class="glass-morphism">
+                </div>
+                <div class="asset-list" id="modalAssetList"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelAssetBtn">Cancel</button>
+                <button class="btn-primary" id="confirmAssetBtn">Add Selected</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content glass-morphism">
+            <div class="modal-header">
+                <h3 id="confirmModalTitle">Confirm Action</h3>
+                <button class="modal-close" id="closeConfirmModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalMessage">Are you sure you want to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelConfirmBtn">Cancel</button>
+                <button class="btn-danger" id="confirmActionBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script type="module" src="js/config.js"></script>
+    <script type="module" src="js/supabase-client.js"></script>
+    <script type="module" src="js/connection-monitor.js"></script>
+    <script type="module" src="js/notifications.js"></script>
+    <script type="module" src="js/settings.js"></script>
+    <script type="module" src="js/global.js"></script>
+<!-- Emblem Loader -->
+<script type="module">
+    import { emblemLoader } from './js/emblem-loader.js';
+    document.addEventListener('DOMContentLoaded', async () => {
+        await emblemLoader.loadSiteEmblem();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | ENVY</title>
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0A0A0A;
+            color: #FFFFFF;
+        }
+        
+        .about-page {
+            min-height: 100vh;
+            padding: 120px 2rem 4rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .about-page h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #FFFFFF;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #9CA3AF 0%, #E5E7EB 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .about-card {
+            padding: 3rem;
+            border-radius: 24px;
+            background: rgba(17, 17, 17, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(156, 163, 175, 0.1);
+        }
+        
+        .about-card p {
+            color: #A1A1A6;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .about-card .quote {
+            font-style: italic;
+            border-left: 4px solid #9CA3AF;
+            padding-left: 2rem;
+            margin: 2rem 0;
+            color: #E5E7EB;
+        }
+        
+        .about-card .signature {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(156, 163, 175, 0.1);
+            color: #A1A1A6;
+        }
+        
+        /* Navigation */
+        .landing-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(156, 163, 175, 0.1);
+        }
+        
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+        
+        .nav-brand img {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+        }
+        
+        .nav-brand span {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #9CA3AF, #E5E7EB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: #A1A1A6;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #E5E7EB;
+        }
+        
+        .nav-links .launch-btn {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, #9CA3AF, #E5E7EB);
+            border-radius: 9999px;
+            color: #0A0A0A !important;
+            font-weight: 600;
+        }
+        
+        /* Background */
+        .luxury-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            overflow: hidden;
+            background: #0A0A0A;
+        }
+        
+        .gradient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+        }
+        
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, #9CA3AF 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+        }
+        
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #6B7280 0%, transparent 70%);
+            bottom: -150px;
+            left: -150px;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .about-page h1 {
+                font-size: 2.5rem;
+            }
+            
+            .about-card {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="luxury-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+    </div>
+    
+    <nav class="landing-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <img src="assets/icons/envy-emblem.svg" alt="ENVY" id="siteEmblem">
+                <span>ENVY</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="features.html">Features</a>
+                <a href="how-it-works.html">How It Works</a>
+                <a href="about.html" class="active">About</a>
+                <a href="auth.html" class="launch-btn">Launch App</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="about-page">
+        <h1>About <span style="background: linear-gradient(135deg, #9CA3AF, #E5E7EB); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">ENVY</span></h1>
+        
+        <div class="about-card">
+            <p>ENVY was born from a simple observation: crypto traders deserve better tools. While the market never sleeps, most trading journals feel like they were built a decade ago—clunky, slow, and disconnected from real-time data.</p>
+            
+            <p>We built ENVY to change that. A trading journal that respects your intelligence and your time. Real-time price feeds via WebSocket. Independent timers for every trade. Mathematical planning tools that help you calculate risk before you commit capital.</p>
+            
+            <div class="quote">
+                "The goal isn't to be the biggest trading journal. It's to be the one that serious traders actually want to use."
+            </div>
+            
+            <p>ENVY is independent and self-funded. We don't sell your data, we don't run ads, and we don't take venture capital that would pressure us to compromise on privacy or user experience.</p>
+            
+            <p>This is version 1.0—the foundation. We're actively developing new features based on feedback from real traders.</p>
+            
+            <div class="signature">
+                <p>— The ENVY Team</p>
+                <p style="font-size: 0.9rem; margin-top: 0.5rem;">Built for traders, by traders.</p>
+            </div>
+        </div>
+    </main>
+    
+    <script type="module">
+        import { emblemLoader } from './js/emblem-loader.js';
+        document.addEventListener('DOMContentLoaded', async () => {
+            await emblemLoader.loadSiteEmblem();
+        });
+    </script>
+</body>
+</html>

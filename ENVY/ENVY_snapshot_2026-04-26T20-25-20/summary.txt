@@ -1,0 +1,11 @@
+
+========================================
+SUMMARY
+========================================
+Project: C:\Users\EMIOLA\Desktop\ENVY
+Files found: 110
+Processed: 110
+Skipped: 0
+Output files: 1
+Output folder: C:\Users\EMIOLA\Desktop\ENVY\ENVY_snapshot_2026-04-26T20-25-20
+========================================

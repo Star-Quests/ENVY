@@ -1,0 +1,495 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+    <meta name="description" content="ENVY Admin - Platform Management">
+    <meta name="theme-color" content="#0A0A0A">
+    
+    <title>Admin | ENVY</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    
+
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/admin.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+</head>
+<body class="dark-theme" data-page="admin">
+    <!-- Animated Background -->
+    <div class="luxury-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+        <div class="noise-overlay"></div>
+    </div>
+    
+    <!-- Connection Status Bar -->
+    <div class="connection-bar" id="connectionBar">
+        <div class="connection-indicator" id="connectionIndicator">
+            <span class="connection-dot"></span>
+            <span class="connection-text">Connected</span>
+        </div>
+        <div class="connection-time" id="connectionTime">
+            <span class="live-badge">● LIVE</span>
+        </div>
+    </div>
+    
+    <!-- Main App Container -->
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar glass-morphism" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-wrapper">
+                    <img src="assets/icons/envy-emblem.svg" alt="ENVY" class="brand-emblem pulse-glow" id="siteEmblem">
+                    <span class="brand-text" id="brandText">ENVY</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M3 12L5 10M5 10L12 3L19 10M5 10V20H9V14H15V20H19V10M19 10L21 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="journal.html" class="nav-item">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 8V12L15 15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span class="nav-text">Journal</span>
+                </a>
+                <a href="planner.html" class="nav-item">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 7H7V9H9V7Z M13 7H11V9H13V7Z M17 7H15V9H17V7Z M9 11H7V13H9V11Z M13 11H11V13H13V11Z M17 11H15V13H17V11Z M9 15H7V17H9V15Z M13 15H11V17H13V15Z M17 15H15V17H17V15Z M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3Z" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span class="nav-text">Planner</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M19.4 15C18.9 16.1 18.1 17 17.2 17.6L19 20.5C19.2 20.8 19.1 21.2 18.8 21.4C18.6 21.5 18.4 21.6 18.1 21.6C18 21.6 17.9 21.6 17.8 21.5L15 20C14.1 20.3 13.1 20.5 12 20.5C10.9 20.5 9.9 20.3 9 20L6.2 21.5C6.1 21.6 6 21.6 5.9 21.6C5.6 21.6 5.4 21.5 5.2 21.4C4.9 21.2 4.8 20.8 5 20.5L6.8 17.6C5.9 17 5.1 16.1 4.6 15C4.1 13.9 3.9 12.8 3.9 11.6C3.9 10.4 4.2 9.3 4.7 8.2C5.2 7.1 5.9 6.1 6.8 5.4L5.1 2.7C4.9 2.4 5 2 5.3 1.8C5.5 1.7 5.8 1.6 6 1.6C6.1 1.6 6.2 1.6 6.3 1.7L9 3.2C9.9 2.9 10.9 2.7 12 2.7C13.1 2.7 14.1 2.9 15 3.2L17.7 1.7C17.8 1.6 17.9 1.6 18.1 1.6C18.4 1.6 18.6 1.7 18.8 1.8C19.1 2 19.2 2.4 19 2.7L17.2 5.5C18.1 6.1 18.9 7.1 19.4 8.2C19.9 9.3 20.1 10.4 20.1 11.6C20.1 12.8 19.8 13.9 19.4 15Z" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span class="nav-text">Settings</span>
+                </a>
+                <div class="nav-divider"></div>
+                <a href="admin.html" class="nav-item active">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 15V19M12 5V9M8 8L5 5M16 8L19 5M8 16L5 19M16 16L19 19M3 12H7M17 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span class="nav-text">Admin</span>
+                </a>
+                <a href="#" class="nav-item logout-item" id="logoutBtn">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9M16 17L21 12M21 12L16 7M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="nav-text">Logout</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-profile" id="userProfile">
+                    <img src="assets/icons/user-avatar.svg" alt="User" class="user-avatar" id="userAvatar">
+                    <div class="user-info">
+                        <div class="user-name-wrapper">
+                            <span class="user-name" id="userName">Admin</span>
+                            <span class="user-emblem crown" id="userEmblem">👑</span>
+                        </div>
+                        <span class="user-greeting" id="userGreeting">Good morning</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="main-content" id="mainContent">
+            <!-- Admin Header -->
+            <header class="dashboard-header glass-morphism">
+                <div class="header-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <h1 class="page-title">Admin Dashboard</h1>
+                    <span class="admin-badge">Administrator</span>
+                </div>
+                <div class="header-right">
+                    <div class="admin-stats">
+                        <div class="stat-badge glass-morphism">
+                            <span class="stat-label">Total Users</span>
+                            <span class="stat-value" id="totalUsers">0</span>
+                        </div>
+                        <div class="stat-badge glass-morphism">
+                            <span class="stat-label">Total Trades</span>
+                            <span class="stat-value" id="totalTrades">0</span>
+                        </div>
+                        <div class="stat-badge glass-morphism">
+                            <span class="stat-label">Active Today</span>
+                            <span class="stat-value" id="activeToday">0</span>
+                        </div>
+                    </div>
+                    <div class="header-time" id="headerTime"></div>
+                </div>
+            </header>
+            
+            <!-- Admin Content -->
+            <div class="admin-content">
+                <!-- Admin Tabs -->
+                <div class="admin-tabs glass-morphism">
+                    <button class="admin-tab active" data-tab="overview">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M3 12H21M12 3V21M4 4L20 20M20 4L4 20" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Overview
+                    </button>
+                    <button class="admin-tab" data-tab="users">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Users
+                    </button>
+                    <button class="admin-tab" data-tab="trades">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 8V12L15 15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Trades
+                    </button>
+                    <button class="admin-tab" data-tab="settings">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Site Settings
+                    </button>
+                    <button class="admin-tab" data-tab="logs">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M4 4H20V20H4V4Z M8 8H16M8 12H16M8 16H12" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        Activity Logs
+                    </button>
+                </div>
+                
+                <!-- Admin Panels -->
+                <div class="admin-panels">
+                    <!-- Overview Panel -->
+                    <div class="admin-panel active" id="overview-panel">
+                        <!-- Stats Grid -->
+                        <div class="stats-grid">
+                            <div class="stat-card glass-morphism">
+                                <div class="stat-icon">👥</div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Total Users</span>
+                                    <span class="stat-number" id="overviewTotalUsers">0</span>
+                                    <span class="stat-trend positive" id="userGrowth">+0 this week</span>
+                                </div>
+                            </div>
+                            <div class="stat-card glass-morphism">
+                                <div class="stat-icon">📊</div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Total Trades</span>
+                                    <span class="stat-number" id="overviewTotalTrades">0</span>
+                                    <span class="stat-trend" id="tradeVolume">$0 volume</span>
+                                </div>
+                            </div>
+                            <div class="stat-card glass-morphism">
+                                <div class="stat-icon">👑</div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Admin Users</span>
+                                    <span class="stat-number" id="adminCount">0</span>
+                                </div>
+                            </div>
+                            <div class="stat-card glass-morphism">
+                                <div class="stat-icon">⚡</div>
+                                <div class="stat-content">
+                                    <span class="stat-label">Active Today</span>
+                                    <span class="stat-number" id="overviewActiveToday">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Charts -->
+                        <div class="charts-row">
+                            <div class="chart-container glass-morphism">
+                                <h3>User Growth</h3>
+                                <canvas id="userGrowthChart"></canvas>
+                            </div>
+                            <div class="chart-container glass-morphism">
+                                <h3>Trade Activity</h3>
+                                <canvas id="tradeActivityChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Activity -->
+                        <div class="recent-activity glass-morphism">
+                            <h3>Recent Admin Activity</h3>
+                            <div class="activity-list" id="recentActivityList"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Users Panel -->
+                    <div class="admin-panel" id="users-panel">
+                        <div class="panel-header">
+                            <h2>User Management</h2>
+                            <div class="panel-actions">
+                                <input type="text" id="userSearchInput" placeholder="Search users..." class="search-input glass-morphism">
+                                <button class="btn-primary" id="exportUsersBtn">Export Users</button>
+                            </div>
+                        </div>
+                        
+                        <div class="users-table-wrapper glass-morphism">
+                            <table class="users-table" id="usersTable">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Trades</th>
+                                        <th>Joined</th>
+                                        <th>Last Active</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody"></tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Pagination -->
+                        <div class="pagination" id="usersPagination">
+                            <button class="page-btn" id="prevUserPageBtn">← Previous</button>
+                            <span class="page-info" id="userPageInfo">Page 1 of 1</span>
+                            <button class="page-btn" id="nextUserPageBtn">Next →</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Trades Panel -->
+                    <div class="admin-panel" id="trades-panel">
+                        <div class="panel-header">
+                            <h2>All Trades</h2>
+                            <div class="panel-actions">
+                                <select id="tradeUserFilter" class="filter-select glass-morphism">
+                                    <option value="all">All Users</option>
+                                </select>
+                                <input type="text" id="tradeSearchInput" placeholder="Search trades..." class="search-input glass-morphism">
+                            </div>
+                        </div>
+                        
+                        <div class="trades-table-wrapper glass-morphism">
+                            <table class="admin-trades-table" id="adminTradesTable">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Asset</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Entry</th>
+                                        <th>Exit</th>
+                                        <th>P/L</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminTradesTableBody"></tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="pagination" id="tradesPagination">
+                            <button class="page-btn" id="prevTradePageBtn">← Previous</button>
+                            <span class="page-info" id="tradePageInfo">Page 1 of 1</span>
+                            <button class="page-btn" id="nextTradePageBtn">Next →</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Site Settings Panel -->
+                    <div class="admin-panel" id="settings-panel">
+                        <div class="settings-section glass-morphism">
+                            <h3>Site Emblem</h3>
+                            <p class="section-description">Upload a custom emblem for the ENVY platform</p>
+                            
+                            <div class="emblem-upload">
+                                <div class="emblem-preview">
+                                    <img src="assets/icons/envy-emblem.svg" alt="Site Emblem" id="siteEmblemPreview" class="emblem-preview-img">
+                                </div>
+                                <div class="emblem-actions">
+                                    <button class="btn-secondary" id="uploadEmblemBtn">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                            <path d="M12 4V20M20 12H4" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                        Upload New Emblem
+                                    </button>
+                                    <button class="btn-warning" id="resetEmblemBtn">
+                                        Reset to Default
+                                    </button>
+                                    <input type="file" id="emblemFileInput" accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-section glass-morphism">
+                            <h3>Maintenance Mode</h3>
+                            <p class="section-description">Enable maintenance mode to prevent user access during updates</p>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label class="setting-label">Maintenance Mode</label>
+                                    <span class="setting-description">Only admins can access the site</span>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="maintenanceModeToggle">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-section glass-morphism">
+                            <h3>Platform Announcement</h3>
+                            <p class="section-description">Display a global announcement to all users</p>
+                            
+                            <div class="announcement-form">
+                                <textarea id="announcementText" class="setting-textarea" placeholder="Enter announcement message..." rows="3"></textarea>
+                                <div class="announcement-actions">
+                                    <button class="btn-primary" id="publishAnnouncementBtn">Publish Announcement</button>
+                                    <button class="btn-secondary" id="clearAnnouncementBtn">Clear</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Activity Logs Panel -->
+                    <div class="admin-panel" id="logs-panel">
+                        <div class="panel-header">
+                            <h2>Admin Activity Logs</h2>
+                            <div class="panel-actions">
+                                <select id="logFilterSelect" class="filter-select glass-morphism">
+                                    <option value="all">All Actions</option>
+                                    <option value="user_upgrade">User Upgrades</option>
+                                    <option value="user_downgrade">User Downgrades</option>
+                                    <option value="password_change">Password Changes</option>
+                                    <option value="settings_change">Settings Changes</option>
+                                    <option value="trade_delete">Trade Deletions</option>
+                                </select>
+                                <button class="btn-secondary" id="exportLogsBtn">Export Logs</button>
+                            </div>
+                        </div>
+                        
+                        <div class="logs-table-wrapper glass-morphism">
+                            <table class="logs-table" id="logsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Admin</th>
+                                        <th>Action</th>
+                                        <th>Target User</th>
+                                        <th>Details</th>
+                                        <th>Timestamp</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="logsTableBody"></tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="pagination" id="logsPagination">
+                            <button class="page-btn" id="prevLogPageBtn">← Previous</button>
+                            <span class="page-info" id="logPageInfo">Page 1 of 1</span>
+                            <button class="page-btn" id="nextLogPageBtn">Next →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- User Details Modal -->
+    <div class="modal" id="userDetailsModal">
+        <div class="modal-content modal-large glass-morphism">
+            <div class="modal-header">
+                <h3>User Details</h3>
+                <button class="modal-close" id="closeUserDetailsModal">&times;</button>
+            </div>
+            <div class="modal-body" id="userDetailsBody"></div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="closeUserDetailsBtn">Close</button>
+                <button class="btn-primary" id="saveUserChangesBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Change Password Modal -->
+    <div class="modal" id="changePasswordModal">
+        <div class="modal-content glass-morphism">
+            <div class="modal-header">
+                <h3>Change User Password</h3>
+                <button class="modal-close" id="closePasswordModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="passwordModalUserInfo"></p>
+                <div class="form-group">
+                    <label class="form-label">New Password</label>
+                    <input type="password" id="newUserPassword" class="form-input" placeholder="Enter new password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" id="confirmUserPassword" class="form-input" placeholder="Confirm new password">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelPasswordBtn">Cancel</button>
+                <button class="btn-primary" id="confirmPasswordBtn">Change Password</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Confirm Action Modal -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content glass-morphism">
+            <div class="modal-header">
+                <h3 id="confirmModalTitle">Confirm Action</h3>
+                <button class="modal-close" id="closeConfirmModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalMessage">Are you sure you want to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelConfirmBtn">Cancel</button>
+                <button class="btn-danger" id="confirmActionBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script type="module" src="js/config.js"></script>
+    <script type="module" src="js/supabase-client.js"></script>
+    <script type="module" src="js/connection-monitor.js"></script>
+    <script type="module" src="js/notifications.js"></script>
+    <script type="module" src="js/admin.js"></script>
+    <script type="module" src="js/global.js"></script>
+<!-- Emblem Loader -->
+<script type="module">
+    import { emblemLoader } from './js/emblem-loader.js';
+    document.addEventListener('DOMContentLoaded', async () => {
+        await emblemLoader.loadSiteEmblem();
+    });
+</script>
+</body>
+</html>
