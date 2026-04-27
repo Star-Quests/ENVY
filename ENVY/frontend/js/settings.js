@@ -67,7 +67,7 @@ class SettingsManager {
     
     async loadAssets() {
         try {
-            const response = await fetch(`${ENVYConfig.API_BASE_URL}/bybit/assets`);
+            const response = await fetch('/api/proxy/bybit-assets');
             this.assets = await response.json();
         } catch (error) {
             console.error('Error loading assets:', error);

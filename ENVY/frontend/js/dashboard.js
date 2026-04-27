@@ -80,20 +80,16 @@ class DashboardManager {
         await this.checkAuth();
         await this.loadUserData();
         
-                // WebSocket disabled for Nigeria - using REST API polling instead
-        // await bybitWS.connect();
-        // bybitWS.onConnectionChange((connected) => {
-        //     this.connectionStatus = connected;
-        //     this.updateConnectionIndicator(connected);
-        // });
-        
-        // Show connected status (using REST API)
-        this.updateConnectionIndicator(true);
+                        // Enable WebSocket for real-time Bybit prices
+        await bybitWS.connect();
+        bybitWS.onConnectionChange((connected) => {
+            this.connectionStatus = connected;
+            this.updateConnectionIndicator(connected);
+        });
         
         this.setupEventListeners();
         this.initializeChart();
-        // this.subscribeToPrices(); // Disabled - WebSocket
-        this.startPricePolling();
+        this.subscribeToPrices();
         this.updateGreeting();
         this.updateDateTime();
         await this.loadHoldings();

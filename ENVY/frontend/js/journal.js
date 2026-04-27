@@ -83,7 +83,7 @@ class JournalManager {
     
     async loadAssets() {
     try {
-        const response = await fetch('https://api.bybit.com/v5/market/instruments-info?category=spot');
+        const response = await fetch('/api/proxy/bybit-assets');
         const data = await response.json();
         
         if (data.retCode === 0 && data.result.list) {
@@ -193,7 +193,7 @@ class JournalManager {
         fetchBtn.innerHTML = '<span class="spinner"></span> Fetching...';
         
         try {
-            const response = await fetch(`${ENVYConfig.API_BASE_URL}/bybit/price?symbol=${symbol}`);
+            const response = await fetch(`/api/proxy/bybit-prices?symbols=${symbol}USDT`);
             const data = await response.json();
             
             if (data.price) {

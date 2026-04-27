@@ -76,7 +76,7 @@ class PlannerManager {
     
     async loadAssets() {
     try {
-        const response = await fetch(`${ENVYConfig.API_BASE_URL}/bybit/assets`);
+        const response = await fetch('/api/proxy/bybit-assets');
         if (response.ok) {
             this.assets = await response.json();
         } else {
@@ -93,7 +93,7 @@ class PlannerManager {
 
 async fetchAssetsFromBybitDirectly() {
     try {
-        const res = await fetch('https://api.bybit.com/v5/market/instruments-info?category=spot');
+        const res = await fetch('/api/proxy/bybit-assets');
         const data = await res.json();
         
         if (data.retCode === 0 && data.result.list) {
@@ -239,7 +239,7 @@ async fetchAssetsFromBybitDirectly() {
         btn.innerHTML = '<span class="spinner"></span>';
         
         try {
-            const response = await fetch(`${ENVYConfig.API_BASE_URL}/bybit/price?symbol=${symbol}`);
+            const response = await fetch(`/api/proxy/bybit-prices?symbols=${symbol}USDT`);
             const data = await response.json();
             
             if (data.price) {

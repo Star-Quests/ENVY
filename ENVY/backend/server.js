@@ -1070,34 +1070,41 @@ app.get('/api/proxy/bybit-assets', async (req, res) => {
 // Handle WebSocket upgrade for Bybit proxy
 server.on('upgrade', (request, socket, head) => {
     if (request.url === '/ws/bybit') {
-        const bybitWs = new WebSocket('wss://stream.bybit.com/v5/public/spot');
-        
-        bybitWs.on('open', () => {
-            console.log('Bybit WebSocket proxy connected');
+        wss.handleUpgrade(request, socket, head, (ws) => {
+            const bybitWs = new WebSocket('wss://stream.bybit.com/v5/public/spot');
+            
+            bybitWs.on('open', () => {
+                console.log('Bybit WebSocket proxy connected');
+            });
+            
+            bybitWs.on('message', (data) => {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send(data.toString());
+                }
+            });
+            
+            bybitWs.on('close', () => {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                }
+            });
+            
+            bybitWs.on('error', (err) => {
+                console.error('Bybit WS error:', err.message);
+            });
+            
+            ws.on('message', (data) => {
+                if (bybitWs.readyState === WebSocket.OPEN) {
+                    bybitWs.send(data.toString());
+                }
+            });
+            
+            ws.on('close', () => {
+                if (bybitWs.readyState === WebSocket.OPEN) {
+                    bybitWs.close();
+                }
+            });
         });
-        
-        bybitWs.on('message', (data) => {
-            socket.write(data);
-        });
-        
-        bybitWs.on('close', () => {
-            socket.destroy();
-        });
-        
-        bybitWs.on('error', () => {
-            socket.destroy();
-        });
-        
-        socket.on('data', (data) => {
-            if (bybitWs.readyState === WebSocket.OPEN) {
-                bybitWs.send(data.toString());
-            }
-        });
-        
-        socket.on('close', () => {
-            bybitWs.close();
-        });
-        
         return;
     }
 });
