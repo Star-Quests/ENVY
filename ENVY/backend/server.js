@@ -1105,18 +1105,25 @@ server.on('upgrade', (request, socket, head) => {
 app.get('/api/proxy/bybit-prices', async (req, res) => {
     try {
         const symbols = req.query.symbols;
-        console.log('Fetching prices for:', symbols);
+        if (!symbols) {
+            return res.status(400).json({ error: 'Missing symbols parameter' });
+        }
         
-        // Use a simple test first
-        const testResponse = await axios.get('https://api.bybit.com/v5/market/tickers?category=spot&symbol=BTCUSDT');
-        console.log('Bybit test response:', JSON.stringify(testResponse.data).substring(0, 200));
+        // Build the URL manually to avoid encoding issues
+        const url = `https://api.bybit.com/v5/market/tickers?category=spot&symbol=${symbols}`;
+        console.log('Fetching Bybit URL:', url);
         
-        // Now fetch all requested symbols
-        const response = await axios.get(`https://api.bybit.com/v5/market/tickers?category=spot&symbol=${symbols}`);
-        res.json(response.data);
+        const response = await axios.get(url);
+        
+        if (response.data && response.data.retCode === 0) {
+            res.json(response.data);
+        } else {
+            console.error('Bybit error:', JSON.stringify(response.data));
+            res.json(response.data);
+        }
     } catch (error) {
         console.error('Bybit proxy error:', error.message);
-        res.status(500).json({ error: 'Failed to fetch prices: ' + error.message });
+        res.status(500).json({ error: 'Failed to fetch prices' });
     }
 });
 
