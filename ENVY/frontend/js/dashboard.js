@@ -222,6 +222,36 @@ class DashboardManager {
                 this.renderCryptoFeed();
     }
 
+    
+    startPricePolling() {
+        if (this.priceUpdateInterval) clearInterval(this.priceUpdateInterval);
+        
+        this.priceUpdateInterval = setInterval(async () => {
+            try {
+                const symbols = this.favoriteAssets.map(s => s + 'USDT').join(',');
+                const res = await fetch(`/api/proxy/bybit-prices?symbols=${symbols}`);
+                const data = await res.json();
+                
+                if (data.retCode === 0 && data.result && data.result.list) {
+                    data.result.list.forEach(ticker => {
+                        const symbol = ticker.symbol.replace('USDT', '');
+                        this.cryptoPrices[symbol] = {
+                            price: parseFloat(ticker.lastPrice) || 0,
+                            change24h: (parseFloat(ticker.price24hPcnt) * 100) || 0,
+                            high24h: parseFloat(ticker.highPrice24h) || 0,
+                            low24h: parseFloat(ticker.lowPrice24h) || 0
+                        };
+                    });
+                    this.renderCryptoFeed();
+                    this.updateHoldingsWithLivePrices();
+                    this.updatePortfolioSummary();
+                }
+            } catch (e) {
+                console.error('Price polling error:', e);
+            }
+        }, 5000);
+    }
+
     updateGreeting() {
         const el = document.getElementById('userGreeting');
         if (!el) return;
