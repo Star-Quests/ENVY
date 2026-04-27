@@ -80,16 +80,12 @@ class DashboardManager {
         await this.checkAuth();
         await this.loadUserData();
         
-                        // Enable WebSocket for real-time Bybit prices
-        await bybitWS.connect();
-        bybitWS.onConnectionChange((connected) => {
-            this.connectionStatus = connected;
-            this.updateConnectionIndicator(connected);
-        });
+                                // REST API polling only - no WebSocket
+        this.updateConnectionIndicator(true);
         
         this.setupEventListeners();
         this.initializeChart();
-        this.subscribeToPrices();
+                // this.subscribeToPrices(); // Disabled - no WebSocket
         this.startPricePolling();
         this.updateGreeting();
         this.updateDateTime();

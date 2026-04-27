@@ -1067,47 +1067,6 @@ app.get('/api/proxy/bybit-assets', async (req, res) => {
 // PROXY BYBIT WEBSOCKET
 // =============================================
 
-// Handle WebSocket upgrade for Bybit proxy
-server.on('upgrade', (request, socket, head) => {
-    if (request.url === '/ws/bybit') {
-        wss.handleUpgrade(request, socket, head, (ws) => {
-            const bybitWs = new WebSocket('wss://stream.bybit.com/v5/public/spot');
-            
-            bybitWs.on('open', () => {
-                console.log('Bybit WebSocket proxy connected');
-            });
-            
-            bybitWs.on('message', (data) => {
-                if (ws.readyState === WebSocket.OPEN) {
-                    ws.send(data.toString());
-                }
-            });
-            
-            bybitWs.on('close', () => {
-                if (ws.readyState === WebSocket.OPEN) {
-                    ws.close();
-                }
-            });
-            
-            bybitWs.on('error', (err) => {
-                console.error('Bybit WS error:', err.message);
-            });
-            
-            ws.on('message', (data) => {
-                if (bybitWs.readyState === WebSocket.OPEN) {
-                    bybitWs.send(data.toString());
-                }
-            });
-            
-            ws.on('close', () => {
-                if (bybitWs.readyState === WebSocket.OPEN) {
-                    bybitWs.close();
-                }
-            });
-        });
-        return;
-    }
-});
 
 app.get('/api/proxy/bybit-prices', async (req, res) => {
     try {
