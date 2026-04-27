@@ -60,7 +60,7 @@ const upload = multer({
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:5500', 'http://127.0.0.1:5500', 'https://envy-trading.onrender.com'],
+    origin: true,
     credentials: true
 }));
 app.use(express.json());
