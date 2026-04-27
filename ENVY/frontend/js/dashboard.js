@@ -90,6 +90,7 @@ class DashboardManager {
         this.setupEventListeners();
         this.initializeChart();
         this.subscribeToPrices();
+        this.startPricePolling();
         this.updateGreeting();
         this.updateDateTime();
         await this.loadHoldings();
