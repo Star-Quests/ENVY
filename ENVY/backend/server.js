@@ -1104,23 +1104,22 @@ server.on('upgrade', (request, socket, head) => {
 
 app.get('/api/proxy/bybit-prices', async (req, res) => {
     try {
-        const symbols = req.query.symbols;
-        if (!symbols) {
-            return res.status(400).json({ error: 'Missing symbols parameter' });
-        }
+        // Use req.url to get the raw query string without encoding
+        const urlParts = req.url.split('?');
+        const queryString = urlParts[1] || '';
+        const params = new URLSearchParams(queryString);
+        const symbols = params.get('symbols') || '';
         
-        // Build the URL manually to avoid encoding issues
-        const url = `https://api.bybit.com/v5/market/tickers?category=spot&symbol=${symbols}`;
-        console.log('Fetching Bybit URL:', url);
+        // Build Bybit URL directly with the raw symbols
+        const bybitUrl = `https://api.bybit.com/v5/market/tickers?category=spot&symbol=${symbols}`;
         
-        const response = await axios.get(url);
+        const response = await axios.get(bybitUrl, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
         
-        if (response.data && response.data.retCode === 0) {
-            res.json(response.data);
-        } else {
-            console.error('Bybit error:', JSON.stringify(response.data));
-            res.json(response.data);
-        }
+        res.json(response.data);
     } catch (error) {
         console.error('Bybit proxy error:', error.message);
         res.status(500).json({ error: 'Failed to fetch prices' });
