@@ -178,7 +178,7 @@ class DashboardManager {
         
         if (dot && text) {
             dot.className = 'connection-dot ' + (connected ? 'status-connected' : 'status-disconnected');
-            text.textContent = connected ? 'Connected (REST API)' : 'Reconnecting...';
+            text.textContent = 'Live (REST API)';
         }
         
         if (liveBadge) {
@@ -230,9 +230,10 @@ class DashboardManager {
                 const data = await res.json();
                 
                 if (data.retCode === 0 && data.result?.list) {
-                    data.result.list.forEach(ticker => {
-                        const symbol = ticker.symbol.replace('USDT', '');
-                        this.cryptoPrices[symbol] = {
+    data.result.list.forEach(ticker => {
+        const symbol = ticker.symbol.replace('USDT', '');
+        console.log('Got price for', symbol, ':', ticker.lastPrice);
+        this.cryptoPrices[symbol] = {
                             price: parseFloat(ticker.lastPrice),
                             change24h: parseFloat(ticker.price24hPcnt) * 100,
                             high24h: parseFloat(ticker.highPrice24h),
