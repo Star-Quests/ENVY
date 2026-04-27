@@ -196,9 +196,11 @@ class JournalManager {
             const response = await fetch(`/api/proxy/bybit-prices?symbols=${symbol}USDT`);
             const data = await response.json();
             
-            if (data.price) {
-                this.currentPrice = data.price;
-                document.getElementById('priceInput').value = data.price;
+            if (data.retCode === 0 && data.result?.list?.length > 0) {
+    const ticker = data.result.list[0];
+    const price = parseFloat(ticker.lastPrice);
+    this.currentPrice = price;
+    document.getElementById('priceInput').value = price;
                 document.getElementById(`price-${symbol}`).textContent = `$${this.formatNumber(data.price)}`;
                 
                 notificationSystem.success(`Current ${symbol} price: $${this.formatNumber(data.price)}`);
@@ -1376,7 +1378,7 @@ if (trade.profit_loss !== null && trade.profit_loss !== undefined) {
         
         let exitPrice;
         try {
-            const response = await fetch(`${ENVYConfig.API_BASE_URL}/bybit/price?symbol=${trade.asset_symbol}`);
+            const response = await fetch(`/api/proxy/bybit-prices?symbols=${symbol}USDT`);
             const data = await response.json();
             exitPrice = data.price;
         } catch (error) {
@@ -1729,11 +1731,11 @@ if (trade.profit_loss !== null && trade.profit_loss !== undefined) {
         
         for (const trade of openTrades) {
             try {
-                const response = await fetch(`${ENVYConfig.API_BASE_URL}/bybit/price?symbol=${trade.asset_symbol}`);
+                                const response = await fetch(`/api/proxy/bybit-prices?symbols=${trade.asset_symbol}USDT`);
                 const data = await response.json();
                 
-                if (data.price) {
-                    this.cryptoPrices[trade.asset_symbol] = data.price;
+                if (data.retCode === 0 && data.result?.list?.length > 0) {
+                    this.cryptoPrices[trade.asset_symbol] = parseFloat(data.result.list[0].lastPrice);
                 }
             } catch (error) {
                 console.error(`Error updating price for ${trade.asset_symbol}:`, error);

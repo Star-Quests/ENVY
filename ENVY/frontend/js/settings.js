@@ -66,9 +66,26 @@ class SettingsManager {
     }
     
     async loadAssets() {
-        try {
-            const response = await fetch('/api/proxy/bybit-assets');
-            this.assets = await response.json();
+    try {
+        const response = await fetch('/api/proxy/bybit-assets');
+        const data = await response.json();
+        
+        if (data.retCode === 0 && data.result.list) {
+            const seen = new Set();
+            this.assets = data.result.list
+                .filter(item => item.status === 'Trading' && item.quoteCoin === 'USDT')
+                .map(item => ({
+                    symbol: item.baseCoin,
+                    name: item.baseCoin,
+                    logoUrl: this.getAssetLogo(item.baseCoin)
+                }))
+                .filter(asset => {
+                    if (seen.has(asset.symbol)) return false;
+                    seen.add(asset.symbol);
+                    return true;
+                })
+                .sort((a, b) => a.symbol.localeCompare(b.symbol));
+        }
         } catch (error) {
             console.error('Error loading assets:', error);
             this.assets = this.getFallbackAssets();

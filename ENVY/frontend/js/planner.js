@@ -240,11 +240,13 @@ async fetchAssetsFromBybitDirectly() {
         
         try {
             const response = await fetch(`/api/proxy/bybit-prices?symbols=${symbol}USDT`);
-            const data = await response.json();
-            
-            if (data.price) {
-                this.currentPrice = data.price;
-                document.getElementById('entryPriceInput').value = data.price;
+const data = await response.json();
+
+if (data.retCode === 0 && data.result?.list?.length > 0) {
+    const ticker = data.result.list[0];
+    const price = parseFloat(ticker.lastPrice);
+    this.currentPrice = price;
+    document.getElementById('entryPriceInput').value = price;
                 this.updatePositionValue();
                 notificationSystem.success(`Current ${symbol} price: $${this.formatNumber(data.price)}`);
             }
