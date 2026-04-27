@@ -287,7 +287,7 @@ class DashboardManager {
         if (this.allBybitAssets.length) return this.allBybitAssets;
         
         try {
-            const res = await fetch('https://api.bybit.com/v5/market/instruments-info?category=spot');
+            const res = await fetch('/api/proxy/bybit-assets');
             const data = await res.json();
             
             if (data.retCode === 0) {

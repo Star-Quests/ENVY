@@ -1050,6 +1050,59 @@ app.get('/api/health', (req, res) => {
 });
 
 // =============================================
+// PROXY BYBIT API (for users in blocked regions)
+// =============================================
+
+app.get('/api/proxy/bybit-assets', async (req, res) => {
+    try {
+        const response = await axios.get('https://api.bybit.com/v5/market/instruments-info?category=spot');
+        res.json(response.data);
+    } catch (error) {
+        console.error('Bybit proxy error:', error.message);
+        res.status(500).json({ error: 'Failed to fetch assets' });
+    }
+});
+
+// =============================================
+// PROXY BYBIT WEBSOCKET
+// =============================================
+
+// Handle WebSocket upgrade for Bybit proxy
+server.on('upgrade', (request, socket, head) => {
+    if (request.url === '/ws/bybit') {
+        const bybitWs = new WebSocket('wss://stream.bybit.com/v5/public/spot');
+        
+        bybitWs.on('open', () => {
+            console.log('Bybit WebSocket proxy connected');
+        });
+        
+        bybitWs.on('message', (data) => {
+            socket.write(data);
+        });
+        
+        bybitWs.on('close', () => {
+            socket.destroy();
+        });
+        
+        bybitWs.on('error', () => {
+            socket.destroy();
+        });
+        
+        socket.on('data', (data) => {
+            if (bybitWs.readyState === WebSocket.OPEN) {
+                bybitWs.send(data.toString());
+            }
+        });
+        
+        socket.on('close', () => {
+            bybitWs.close();
+        });
+        
+        return;
+    }
+});
+
+// =============================================
 // SPA FALLBACK - Serve index.html for all other routes
 // =============================================
 

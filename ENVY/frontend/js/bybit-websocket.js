@@ -22,7 +22,8 @@ class BybitWebSocket {
 
         return new Promise((resolve, reject) => {
             try {
-                this.ws = new WebSocket('wss://stream.bybit.com/v5/public/spot');
+                const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+this.ws = new WebSocket(`${wsProtocol}//${window.location.host}/ws/bybit`);
                 
                 this.ws.onopen = () => {
                     console.log('Bybit WebSocket connected');
