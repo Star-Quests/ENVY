@@ -1104,18 +1104,17 @@ server.on('upgrade', (request, socket, head) => {
 
 app.get('/api/proxy/bybit-prices', async (req, res) => {
     try {
-        // Use req.url to get the raw query string without encoding
-        const urlParts = req.url.split('?');
-        const queryString = urlParts[1] || '';
-        const params = new URLSearchParams(queryString);
-        const symbols = params.get('symbols') || '';
+        // Get raw query string and extract symbols directly
+        const rawQuery = req.url.split('?')[1] || '';
+        const match = rawQuery.match(/symbols=([^&]+)/);
+        const symbols = match ? decodeURIComponent(match[1]) : '';
         
-        // Build Bybit URL directly with the raw symbols
-        const bybitUrl = `https://api.bybit.com/v5/market/tickers?category=spot&symbol=${symbols}`;
+        console.log('Symbols received:', symbols);
         
-        const response = await axios.get(bybitUrl, {
-            headers: {
-                'Accept': 'application/json'
+        const response = await axios.get('https://api.bybit.com/v5/market/tickers', {
+            params: {
+                category: 'spot',
+                symbol: symbols
             }
         });
         
