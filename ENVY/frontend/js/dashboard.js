@@ -89,6 +89,7 @@ class DashboardManager {
         this.setupEventListeners();
         this.initializeChart();
         this.subscribeToPrices();
+        this.startPricePolling();
         this.updateGreeting();
         this.updateDateTime();
         await this.loadHoldings();
@@ -214,9 +215,36 @@ class DashboardManager {
             if (cached) this.cryptoPrices[symbol] = cached;
         });
         
-        this.renderCryptoFeed();
+                this.renderCryptoFeed();
     }
-    
+
+    startPricePolling() {
+        this.priceUpdateInterval = setInterval(async () => {
+            try {
+                const symbols = this.favoriteAssets.map(s => s + 'USDT').join(',');
+                const res = await fetch(`/api/proxy/bybit-prices?symbols=${symbols}`);
+                const data = await res.json();
+                
+                if (data.retCode === 0 && data.result?.list) {
+                    data.result.list.forEach(ticker => {
+                        const symbol = ticker.symbol.replace('USDT', '');
+                        this.cryptoPrices[symbol] = {
+                            price: parseFloat(ticker.lastPrice),
+                            change24h: parseFloat(ticker.price24hPcnt) * 100,
+                            high24h: parseFloat(ticker.highPrice24h),
+                            low24h: parseFloat(ticker.lowPrice24h)
+                        };
+                    });
+                    this.renderCryptoFeed();
+                    this.updateHoldingsWithLivePrices();
+                    this.updatePortfolioSummary();
+                }
+            } catch (e) {
+                console.error('Price polling error:', e);
+            }
+        }, 5000);
+    }
+
     updateGreeting() {
         const el = document.getElementById('userGreeting');
         if (!el) return;
@@ -385,6 +413,7 @@ getCoinGeckoName(symbol) {
             this.favoriteAssets = [...selected];
             await supabase.from('user_settings').upsert({ user_id: this.user.id, favorite_assets: this.favoriteAssets });
             this.subscribeToPrices();
+            this.startPricePolling();
             modal.remove();
             notificationSystem?.success('Assets updated');
         });

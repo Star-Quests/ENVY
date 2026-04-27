@@ -1102,6 +1102,16 @@ server.on('upgrade', (request, socket, head) => {
     }
 });
 
+app.get('/api/proxy/bybit-prices', async (req, res) => {
+    try {
+        const { symbols } = req.query;
+        const response = await axios.get(`https://api.bybit.com/v5/market/tickers?category=spot&symbol=${symbols}`);
+        res.json(response.data);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch prices' });
+    }
+});
+
 // =============================================
 // SPA FALLBACK - Serve index.html for all other routes
 // =============================================
