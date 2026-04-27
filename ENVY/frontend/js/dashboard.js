@@ -80,15 +80,19 @@ class DashboardManager {
         await this.checkAuth();
         await this.loadUserData();
         
-        await bybitWS.connect();
-        bybitWS.onConnectionChange((connected) => {
-            this.connectionStatus = connected;
-            this.updateConnectionIndicator(connected);
-        });
+                // WebSocket disabled for Nigeria - using REST API polling instead
+        // await bybitWS.connect();
+        // bybitWS.onConnectionChange((connected) => {
+        //     this.connectionStatus = connected;
+        //     this.updateConnectionIndicator(connected);
+        // });
+        
+        // Show connected status (using REST API)
+        this.updateConnectionIndicator(true);
         
         this.setupEventListeners();
         this.initializeChart();
-        this.subscribeToPrices();
+        // this.subscribeToPrices(); // Disabled - WebSocket
         this.startPricePolling();
         this.updateGreeting();
         this.updateDateTime();
@@ -174,7 +178,7 @@ class DashboardManager {
         
         if (dot && text) {
             dot.className = 'connection-dot ' + (connected ? 'status-connected' : 'status-disconnected');
-            text.textContent = connected ? 'Connected (Bybit WebSocket)' : 'Reconnecting...';
+            text.textContent = connected ? 'Connected (REST API)' : 'Reconnecting...';
         }
         
         if (liveBadge) {
