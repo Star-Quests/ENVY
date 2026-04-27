@@ -74,7 +74,9 @@ class ConnectionMonitor {
         // Show notification on status change
         if (previousStatus !== status) {
             if (status === 'connected') {
+                notificationSystem.success('Connection restored', { duration: 3000 });
             } else if (status === 'disconnected') {
+                notificationSystem.error('Connection lost. Reconnecting...', { duration: 0 });
                 this.attemptReconnect();
             }
         }
