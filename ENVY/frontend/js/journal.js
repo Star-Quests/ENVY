@@ -203,7 +203,7 @@ class JournalManager {
     document.getElementById('priceInput').value = price;
                 document.getElementById(`price-${symbol}`).textContent = `$${this.formatNumber(data.price)}`;
                 
-                notificationSystem.success(`Current ${symbol} price: $${this.formatNumber(data.price)}`);
+                notificationSystem.success(`Current ${symbol} price: $${this.formatNumber(price)}`);
             }
         } catch (error) {
             console.error('Error fetching price:', error);

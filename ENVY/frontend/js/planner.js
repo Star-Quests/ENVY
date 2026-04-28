@@ -248,7 +248,7 @@ if (data.retCode === 0 && data.result?.list?.length > 0) {
     this.currentPrice = price;
     document.getElementById('entryPriceInput').value = price;
                 this.updatePositionValue();
-                notificationSystem.success(`Current ${symbol} price: $${this.formatNumber(data.price)}`);
+                notificationSystem.success(`Current ${symbol} price: $${this.formatNumber(price)}`);
             }
         } catch (error) {
             console.error('Error fetching price:', error);
