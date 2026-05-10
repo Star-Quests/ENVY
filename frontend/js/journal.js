@@ -250,15 +250,28 @@ class JournalManager {
         
         document.getElementById('buyTypeBtn').addEventListener('click', () => {
     this.setTradeType('buy');
+    document.getElementById('linkedBuyGroup').style.display = 'none';
+    document.getElementById('partialCloseGroup').style.display = 'none';
+    
+    // Reset labels for BUY mode
+    document.getElementById('priceLabel').textContent = 'Entry Price (USD)';
+    document.getElementById('exitPriceLabel').textContent = 'Exit Price (Optional)';
+    document.getElementById('priceInput').placeholder = '0.00';
 });
 
-document.getElementById('sellTypeBtn').addEventListener('click', () => {
-    // Always stay on Buy - just show instructions
-    this.setTradeType('buy');
-    notificationSystem.info('💡 To close a position: Click the 👁️ eye icon on any BUY trade → Edit Trade → Advanced Options → Enter Exit Price → Update Trade');
+document.getElementById('sellTypeBtn').addEventListener('click', async () => {
+    this.setTradeType('sell');
+    document.getElementById('linkedBuyGroup').style.display = 'block';
+    document.getElementById('partialCloseGroup').style.display = 'block';
+    await this.loadOpenBuyPositions();
+    
+    // Swap labels for SELL mode
+    document.getElementById('priceLabel').textContent = 'Exit Price (USD)';
+    document.getElementById('exitPriceLabel').textContent = 'Entry Price (USD)';
+    document.getElementById('priceInput').placeholder = 'Enter sell price';
 });
-
-document.getElementById('toggleAdvancedBtn').addEventListener('click', () => {
+        
+        document.getElementById('toggleAdvancedBtn').addEventListener('click', () => {
             const advancedFields = document.getElementById('advancedFields');
             const isVisible = advancedFields.style.display !== 'none';
             advancedFields.style.display = isVisible ? 'none' : 'block';
@@ -445,8 +458,8 @@ document.getElementById('toggleAdvancedBtn').addEventListener('click', () => {
     }
     
     getTradeType() {
-    return 'buy'; // Always returns buy - selling is done through Edit Trade
-}
+        return document.getElementById('buyTypeBtn').classList.contains('active') ? 'buy' : 'sell';
+    }
     
     filterAssets(query) {
         const items = document.querySelectorAll('.asset-dropdown-item');
@@ -485,9 +498,26 @@ document.getElementById('toggleAdvancedBtn').addEventListener('click', () => {
         let remainingAmount = null;
         
         if (tradeType === 'sell') {
-    notificationSystem.info('💡 To close a position: Click the 👁️ eye icon on the trade → Edit Trade → Advanced Options → Enter Exit Price → Update Trade');
-    return;
-}
+            if (!this.selectedLinkedBuy) {
+                notificationSystem.error('Please select a Buy position to close');
+                return;
+            }
+            
+            const buyTrade = this.selectedLinkedBuy;
+            const availableAmount = buyTrade.remaining_amount || buyTrade.amount;
+            
+            if (amount > availableAmount) {
+                notificationSystem.error(`Cannot sell more than available amount (${this.formatNumber(availableAmount, 8)} ${buyTrade.asset_symbol})`);
+                return;
+            }
+            
+            linkedBuyId = buyTrade.id;
+            isPartial = this.isPartialClose;
+            
+            if (isPartial) {
+                remainingAmount = availableAmount - amount;
+            }
+        }
         
         const tradeData = {
             user_id: this.user.id,
@@ -517,68 +547,66 @@ document.getElementById('toggleAdvancedBtn').addEventListener('click', () => {
             notificationSystem.error('Failed to add trade');
             return;
         }
-
-        if (tradeType === 'buy') {
-    await this.updateHoldings(data);
-}
-        
-                console.log('🔴 SELL DEBUG - tradeType:', tradeType, 'linkedBuyId:', linkedBuyId, 'selectedLinkedBuy:', this.selectedLinkedBuy);
         
         if (tradeType === 'sell' && linkedBuyId) {
     const buyTrade = this.selectedLinkedBuy;
     const newRemaining = (buyTrade.remaining_amount || buyTrade.amount) - amount;
+    
+    // Calculate P/L using the correct formula (no Math.abs)
     const sellPL = (price - buyTrade.entry_price) * amount;
     const sellPLPercent = buyTrade.entry_price > 0 ? ((price - buyTrade.entry_price) / buyTrade.entry_price) * 100 : 0;
     
-    // Delete the duplicate sell trade
-    await supabase.from('trades').delete().eq('id', data.id);
+    // DELETE the new sell trade we just created - we don't want it
+    await supabase
+        .from('trades')
+        .delete()
+        .eq('id', data.id);
     
-    // Stop the timer for the deleted sell trade
-    const sellTimer = this.activeTimers.get(data.id);
-    if (sellTimer) { clearInterval(sellTimer); this.activeTimers.delete(data.id); }
-    
-    // Update the ORIGINAL buy trade with P/L and close it
-    await supabase.from('trades').update({ 
-        exit_price: price,
-        profit_loss: sellPL,
-        profit_loss_percentage: sellPLPercent,
-        status: newRemaining <= 0.00000001 ? 'closed' : 'open',
-        ended_at: newRemaining <= 0.00000001 ? new Date().toISOString() : null,
-        remaining_amount: newRemaining,
-        trade_type: newRemaining <= 0.00000001 ? 'sell' : 'buy'
-    }).eq('id', linkedBuyId);
-    
-    // Stop buy timer if fully closed
-    if (newRemaining <= 0.00000001) {
-        const buyTimer = this.activeTimers.get(linkedBuyId);
-        if (buyTimer) { clearInterval(buyTimer); this.activeTimers.delete(linkedBuyId); }
+    // Stop the timer for the deleted trade
+    const newTimerInterval = this.activeTimers.get(data.id);
+    if (newTimerInterval) {
+        clearInterval(newTimerInterval);
+        this.activeTimers.delete(data.id);
     }
     
-    // Update holdings
-    const holdingResult = await supabase.from('holdings').select('*').eq('user_id', this.user.id).eq('asset_symbol', buyTrade.asset_symbol).single();
-    if (holdingResult.data) {
-        const newAmount = holdingResult.data.total_amount - amount;
-        if (newAmount <= 0.00000001) {
-            await supabase.from('holdings').delete().eq('id', holdingResult.data.id);
-        } else {
-            await supabase.from('holdings').update({ total_amount: newAmount }).eq('id', holdingResult.data.id);
+    // Update the ORIGINAL buy trade with the P/L and close it
+    await supabase
+        .from('trades')
+        .update({ 
+            exit_price: price,
+            profit_loss: sellPL,
+            profit_loss_percentage: sellPLPercent,
+            status: newRemaining <= 0.00000001 ? 'closed' : 'open',
+            ended_at: newRemaining <= 0.00000001 ? new Date().toISOString() : null,
+            remaining_amount: newRemaining,
+            trade_type: newRemaining <= 0.00000001 ? 'sell' : 'buy'  // Only change to sell if fully closed
+        })
+        .eq('id', linkedBuyId);
+    
+    // If the original buy is now closed, stop its timer
+    if (newRemaining <= 0.00000001) {
+        const buyTimerInterval = this.activeTimers.get(linkedBuyId);
+        if (buyTimerInterval) {
+            clearInterval(buyTimerInterval);
+            this.activeTimers.delete(linkedBuyId);
         }
     }
+}
+        
+        if (tradeType === 'buy') {
+    await this.updateHoldings(data);
 }
         
         if (this.userSettings?.sound_enabled) {
             document.getElementById('tradeSuccessSound').play();
         }
         
-                        notificationSystem.success('Trade added successfully');
-        
-        // Trigger dashboard to refresh
-        localStorage.setItem('envy_journal_update', Date.now().toString());
+        notificationSystem.success('Trade added successfully');
         
         if (this.userSettings?.auto_clear_form) {
             this.clearForm();
-            
-            
+            document.getElementById('linkedBuyGroup').style.display = 'none';
+            document.getElementById('partialCloseGroup').style.display = 'none';
         }
         
         this.loadTrades();
