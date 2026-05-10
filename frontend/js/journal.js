@@ -44,21 +44,24 @@ class JournalManager {
     this.updateGreeting();
     this.updateDateTime();
     
-    // Ensure filters show all trades on page load
+    // Reset filters and load trades - wait for DOM elements
     this.filters.status = 'all';
     this.filters.asset = 'all';
     this.currentPage = 1;
-    const statusFilter = document.getElementById('filterStatus');
-    const assetFilter = document.getElementById('filterAsset');
-    if (statusFilter) statusFilter.value = 'all';
-    if (assetFilter) assetFilter.value = 'all';
-    
-    this.loadTrades();
+    await this.loadTrades();
     this.updateStatistics();
     this.startPriceUpdates();
     this.checkAdminStatus();
     this.applyUserSettings();
     this.applyFormDefaults();
+    
+    // Set filter dropdowns AFTER DOM is ready
+    setTimeout(() => {
+        const statusFilter = document.getElementById('filterStatus');
+        const assetFilter = document.getElementById('filterAsset');
+        if (statusFilter) statusFilter.value = 'all';
+        if (assetFilter) assetFilter.value = 'all';
+    }, 100);
 }
     
     async checkAuth() {
