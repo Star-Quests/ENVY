@@ -37,19 +37,29 @@ class JournalManager {
     }
     
     async initialize() {
-        await this.checkAuth();
-        await this.loadUserData();
-        await this.loadAssets();
-        this.setupEventListeners();
-        this.updateGreeting();
-        this.updateDateTime();
-        this.loadTrades();
-        this.updateStatistics();
-        this.startPriceUpdates();
-        this.checkAdminStatus();
-        this.applyUserSettings();
-        this.applyFormDefaults();
-    }
+    await this.checkAuth();
+    await this.loadUserData();
+    await this.loadAssets();
+    this.setupEventListeners();
+    this.updateGreeting();
+    this.updateDateTime();
+    
+    // Ensure filters show all trades on page load
+    this.filters.status = 'all';
+    this.filters.asset = 'all';
+    this.currentPage = 1;
+    const statusFilter = document.getElementById('filterStatus');
+    const assetFilter = document.getElementById('filterAsset');
+    if (statusFilter) statusFilter.value = 'all';
+    if (assetFilter) assetFilter.value = 'all';
+    
+    this.loadTrades();
+    this.updateStatistics();
+    this.startPriceUpdates();
+    this.checkAdminStatus();
+    this.applyUserSettings();
+    this.applyFormDefaults();
+}
     
     async checkAuth() {
         const { data: { user }, error } = await supabase.auth.getUser();
@@ -582,6 +592,10 @@ if (sellBtn) {
         
         notificationSystem.success('Trade added successfully');
         localStorage.setItem('envy_journal_update', Date.now().toString());
+        // Force refresh all filters to show the new trade
+this.filters.status = 'all';
+this.filters.asset = 'all';
+this.currentPage = 1;
         
         if (this.userSettings?.auto_clear_form) {
     this.clearForm();
