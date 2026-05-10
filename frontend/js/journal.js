@@ -259,16 +259,9 @@ class JournalManager {
     document.getElementById('priceInput').placeholder = '0.00';
 });
 
-document.getElementById('sellTypeBtn').addEventListener('click', async () => {
-    this.setTradeType('sell');
-    document.getElementById('linkedBuyGroup').style.display = 'block';
-    document.getElementById('partialCloseGroup').style.display = 'block';
-    await this.loadOpenBuyPositions();
-    
-    // Swap labels for SELL mode
-    document.getElementById('priceLabel').textContent = 'Exit Price (USD)';
-    document.getElementById('exitPriceLabel').textContent = 'Entry Price (USD)';
-    document.getElementById('priceInput').placeholder = 'Enter sell price';
+document.getElementById('sellTypeBtn').addEventListener('click', () => {
+    this.setTradeType('buy');
+    notificationSystem.info('💡 To close: View Details → Edit Trade → Advanced Options → Exit Price → Update Trade');
 });
         
         document.getElementById('toggleAdvancedBtn').addEventListener('click', () => {
@@ -498,26 +491,9 @@ document.getElementById('sellTypeBtn').addEventListener('click', async () => {
         let remainingAmount = null;
         
         if (tradeType === 'sell') {
-            if (!this.selectedLinkedBuy) {
-                notificationSystem.error('Please select a Buy position to close');
-                return;
-            }
-            
-            const buyTrade = this.selectedLinkedBuy;
-            const availableAmount = buyTrade.remaining_amount || buyTrade.amount;
-            
-            if (amount > availableAmount) {
-                notificationSystem.error(`Cannot sell more than available amount (${this.formatNumber(availableAmount, 8)} ${buyTrade.asset_symbol})`);
-                return;
-            }
-            
-            linkedBuyId = buyTrade.id;
-            isPartial = this.isPartialClose;
-            
-            if (isPartial) {
-                remainingAmount = availableAmount - amount;
-            }
-        }
+    notificationSystem.info('💡 To close: View Details → Edit Trade → Advanced Options → Exit Price → Update Trade');
+    return;
+}
         
         const tradeData = {
             user_id: this.user.id,
@@ -602,6 +578,7 @@ document.getElementById('sellTypeBtn').addEventListener('click', async () => {
         }
         
         notificationSystem.success('Trade added successfully');
+        localStorage.setItem('envy_journal_update', Date.now().toString());
         
         if (this.userSettings?.auto_clear_form) {
             this.clearForm();
