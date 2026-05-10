@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Features | ENVY</title>
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0A0A0A;
+            color: #FFFFFF;
+        }
+        
+        .features-page {
+            min-height: 100vh;
+            padding: 120px 2rem 4rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .features-page h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: #FFFFFF;
+        }
+        
+        .features-page .subtitle {
+            text-align: center;
+            color: #A1A1A6;
+            margin-bottom: 4rem;
+            font-size: 1.2rem;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #9CA3AF 0%, #E5E7EB 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .features-grid-large {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+        
+        .feature-card-large {
+            padding: 2rem;
+            border-radius: 20px;
+            background: rgba(17, 17, 17, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(156, 163, 175, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card-large:hover {
+            transform: translateY(-4px);
+            border-color: #9CA3AF;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .feature-card-large .icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #9CA3AF;
+        }
+        
+        .feature-card-large h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #E5E7EB;
+        }
+        
+        .feature-card-large p {
+            color: #A1A1A6;
+            line-height: 1.7;
+        }
+        
+        /* Navigation */
+        .landing-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(156, 163, 175, 0.1);
+        }
+        
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+        
+        .nav-brand img {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+        }
+        
+        .nav-brand span {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #9CA3AF, #E5E7EB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: #A1A1A6;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #E5E7EB;
+        }
+        
+        .nav-links .launch-btn {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, #9CA3AF, #E5E7EB);
+            border-radius: 9999px;
+            color: #0A0A0A !important;
+            font-weight: 600;
+        }
+        
+        /* Background */
+        .luxury-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            overflow: hidden;
+            background: #0A0A0A;
+        }
+        
+        .gradient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+        }
+        
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, #9CA3AF 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+        }
+        
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #6B7280 0%, transparent 70%);
+            bottom: -150px;
+            left: -150px;
+        }
+        
+        @media (max-width: 768px) {
+            .features-grid-large {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .features-page h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="luxury-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+    </div>
+    
+    <nav class="landing-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <img src="assets/icons/envy-emblem.svg" alt="ENVY" id="siteEmblem">
+                <span>ENVY</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="features.html" class="active">Features</a>
+                <a href="how-it-works.html">How It Works</a>
+                <a href="about.html">About</a>
+                <a href="auth.html" class="launch-btn">Launch App</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="features-page">
+        <h1>Professional <span style="background: linear-gradient(135deg, #9CA3AF 0%, #E5E7EB 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: inline-block;">Features</span></h1>
+        <p class="subtitle">Everything you need to master your crypto trading</p>
+        
+        <div class="features-grid-large">
+            <div class="feature-card-large">
+                <div class="icon">📊</div>
+                <h3>Live Portfolio Tracking</h3>
+                <p>Real-time P&L updates via Bybit WebSocket. Watch your portfolio value change instantly as markets move. Support for 450+ cryptocurrencies with official logos.</p>
+            </div>
+            <div class="feature-card-large">
+                <div class="icon">⏱️</div>
+                <h3>Independent Trade Timers</h3>
+                <p>Each trade runs its own independent timer. Track duration from minutes to years. Pause, resume, or close trades manually with full control.</p>
+            </div>
+            <div class="feature-card-large">
+                <div class="icon">🎯</div>
+                <h3>Mathematical Trade Planner</h3>
+                <p>Calculate optimal entries, exits, and trailing stops using institutional formulas. Know your risk/reward ratio before entering any position.</p>
+            </div>
+            <div class="feature-card-large">
+                <div class="icon">📈</div>
+                <h3>Advanced Analytics</h3>
+                <p>Win rate, profit factor, average win/loss, largest win/loss, and trade duration metrics. Identify patterns and optimize your strategy.</p>
+            </div>
+            <div class="feature-card-large">
+                <div class="icon">🎨</div>
+                <h3>Deep Customization</h3>
+                <p>Customize theme, accent colors, font styles, glass morphism intensity, border radius, and animation speed. Your interface, your rules.</p>
+            </div>
+            <div class="feature-card-large">
+                <div class="icon">🔒</div>
+                <h3>Privacy & Security</h3>
+                <p>Your trading data is encrypted and private. Row-level security ensures only you can access your information. No data sharing, ever.</p>
+            </div>
+            <div class="feature-card-large">
+                <div class="icon">📱</div>
+                <h3>Fully Responsive</h3>
+                <p>Works flawlessly on desktop, tablet, and mobile devices. Trade journaling on the go with the same professional experience.</p>
+            </div>
+            <div class="feature-card-large">
+                <div class="icon">📤</div>
+                <h3>Export & Backup</h3>
+                <p>Export your entire trading history to CSV or PDF. Never lose your data. Full account export available anytime.</p>
+            </div>
+        </div>
+    </main>
+    
+    <script type="module">
+        import { emblemLoader } from './js/emblem-loader.js';
+        document.addEventListener('DOMContentLoaded', async () => {
+            await emblemLoader.loadSiteEmblem();
+        });
+    </script>
+</body>
+</html>

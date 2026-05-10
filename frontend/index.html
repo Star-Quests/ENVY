@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="description" content="ENVY - Professional Crypto Trading Journal & Portfolio Management">
+    <meta name="theme-color" content="#0A0A0A">
+    
+    <title>ENVY | Professional Crypto Trading Journal</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Landing Page Independent Styles -->
+    <style>
+        /* ENVY Landing Page - Independent Theme System */
+        :root {
+            --landing-bg: #0A0A0A;
+            --landing-surface: #111111;
+            --landing-border: rgba(255, 255, 255, 0.06);
+            --landing-text-primary: #FFFFFF;
+            --landing-text-secondary: #A1A1A6;
+            --landing-text-muted: #6B7280;
+            --landing-accent: #9CA3AF;
+            --landing-accent-hover: #E5E7EB;
+            --landing-gradient: linear-gradient(135deg, #9CA3AF 0%, #6B7280 50%, #E5E7EB 100%);
+            --landing-glass: rgba(17, 17, 17, 0.8);
+            --landing-blur: blur(20px);
+            --landing-radius: 16px;
+            --landing-radius-sm: 8px;
+            --landing-radius-full: 9999px;
+            --landing-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --landing-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            --landing-shadow-hover: 0 30px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--landing-bg);
+            color: var(--landing-text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .landing-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Animated Background */
+        .landing-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+        }
+        
+        .bg-orb-1 {
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, #9CA3AF 0%, transparent 70%);
+            top: -300px;
+            right: -200px;
+        }
+        
+        .bg-orb-2 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, #6B7280 0%, transparent 70%);
+            bottom: -200px;
+            left: -150px;
+        }
+        
+        .bg-orb-3 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #E5E7EB 0%, transparent 70%);
+            top: 50%;
+            left: 30%;
+        }
+        
+        .bg-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(156, 163, 175, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(156, 163, 175, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+        
+        /* Navigation */
+        .landing-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 0;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--landing-border);
+        }
+        
+        .nav-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .nav-brand img {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+        }
+        
+        .nav-brand span {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--landing-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+        }
+        
+        .nav-link {
+            color: var(--landing-text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: var(--landing-transition);
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--landing-gradient);
+            transition: var(--landing-transition);
+        }
+        
+        .nav-link:hover {
+            color: var(--landing-text-primary);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .nav-link.highlight {
+            padding: 0.6rem 1.5rem;
+            background: var(--landing-gradient);
+            border-radius: var(--landing-radius-full);
+            color: var(--landing-bg);
+            font-weight: 600;
+        }
+        
+        .nav-link.highlight:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(156, 163, 175, 0.3);
+        }
+        
+        .nav-link.highlight::after {
+            display: none;
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 6rem 0 4rem;
+            position: relative;
+        }
+        
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            background: var(--landing-glass);
+            backdrop-filter: var(--landing-blur);
+            border: 1px solid var(--landing-border);
+            border-radius: var(--landing-radius-full);
+            font-size: 0.85rem;
+            color: var(--landing-text-secondary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+        
+        .hero-title .gradient-text {
+            background: var(--landing-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--landing-text-secondary);
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+        }
+        
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.9rem 2rem;
+            background: var(--landing-gradient);
+            border-radius: var(--landing-radius-full);
+            color: var(--landing-bg);
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--landing-transition);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(156, 163, 175, 0.3);
+        }
+        
+        .btn-secondary {
+            color: var(--landing-text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--landing-transition);
+        }
+        
+        .btn-secondary:hover {
+            color: var(--landing-text-primary);
+        }
+        
+        /* Dashboard Preview Card */
+        .preview-card {
+            background: var(--landing-glass);
+            backdrop-filter: var(--landing-blur);
+            border: 1px solid var(--landing-border);
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: var(--landing-shadow);
+            transform: perspective(1000px) rotateY(-4deg) rotateX(2deg);
+            transition: var(--landing-transition);
+        }
+        
+        .preview-card:hover {
+            transform: perspective(1000px) rotateY(-2deg) rotateX(1deg);
+            box-shadow: var(--landing-shadow-hover);
+        }
+        
+        .preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+        }
+        
+        .preview-dots {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .preview-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .preview-dot.red { background: #EF4444; }
+        .preview-dot.yellow { background: #F59E0B; }
+        .preview-dot.green { background: #10B981; }
+        
+        .preview-title {
+            font-size: 0.85rem;
+            color: var(--landing-text-muted);
+        }
+        
+        .preview-chart {
+            height: 140px;
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-bar {
+            flex: 1;
+            background: var(--landing-gradient);
+            border-radius: 4px 4px 0 0;
+            opacity: 0.6;
+            transition: height 0.3s;
+        }
+        
+        .preview-assets {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .preview-asset {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .asset-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .asset-info img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+        
+        .asset-symbol {
+            font-weight: 600;
+        }
+        
+        .asset-name {
+            font-size: 0.8rem;
+            color: var(--landing-text-muted);
+        }
+        
+        .asset-price {
+            font-family: 'SF Mono', monospace;
+        }
+        
+        .asset-change {
+            font-weight: 600;
+        }
+        
+        .asset-change.positive { color: #10B981; }
+        .asset-change.negative { color: #EF4444; }
+        
+        /* Trust Section */
+        .trust-section {
+            padding: 5rem 0;
+            border-top: 1px solid var(--landing-border);
+            border-bottom: 1px solid var(--landing-border);
+        }
+        
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            text-align: center;
+        }
+        
+        .trust-item h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .trust-item p {
+            color: var(--landing-text-muted);
+            font-size: 0.9rem;
+        }
+        
+        /* Footer */
+        .landing-footer {
+            padding: 3rem 0;
+        }
+        
+        .footer-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .footer-brand img {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+        }
+        
+        .footer-copyright {
+            color: var(--landing-text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+        
+        .footer-links a {
+            color: var(--landing-text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--landing-transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--landing-text-primary);
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        
+        .mobile-menu-btn span {
+            width: 24px;
+            height: 2px;
+            background: var(--landing-text-primary);
+            border-radius: 2px;
+            transition: var(--landing-transition);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            
+            .hero-content {
+                text-align: center;
+            }
+            
+            .hero-description {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            .hero-actions {
+                justify-content: center;
+            }
+            
+            .preview-card {
+                transform: none;
+                max-width: 450px;
+                margin: 0 auto;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            .trust-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .footer-wrapper {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+            
+            .footer-brand {
+                flex-direction: column;
+            }
+            
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+    
+    <link rel="icon" type="image/svg+xml" href="assets/icons/envy-emblem.svg">
+</head>
+<body>
+    <!-- Background -->
+    <div class="landing-background">
+        <div class="bg-orb bg-orb-1"></div>
+        <div class="bg-orb bg-orb-2"></div>
+        <div class="bg-orb bg-orb-3"></div>
+        <div class="bg-grid"></div>
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="landing-nav">
+        <div class="landing-container">
+            <div class="nav-wrapper">
+                <div class="nav-brand">
+                    <img src="assets/icons/envy-emblem.svg" alt="ENVY" id="siteEmblem">
+                    <span>ENVY</span>
+                </div>
+                <div class="nav-links">
+                    <a href="features.html" class="nav-link">Features</a>
+                    <a href="how-it-works.html" class="nav-link">How It Works</a>
+                    <a href="about.html" class="nav-link">About</a>
+                    <a href="auth.html" class="nav-link highlight">Launch App</a>
+                </div>
+                <button class="mobile-menu-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="landing-container">
+            <div class="hero-grid">
+                <div class="hero-content">
+                    <span class="hero-badge">Professional Trading Journal</span>
+                    <h1 class="hero-title">
+                        Trade with <span class="gradient-text">clarity</span>
+                        <br>Grow with <span class="gradient-text">confidence</span>
+                    </h1>
+                    <p class="hero-description">
+                        Track every trade, analyze your performance, and master the markets 
+                        with institutional-grade tools designed for serious traders.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="auth.html" class="btn-primary">
+                            Get Started
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </a>
+                        <a href="features.html" class="btn-secondary">
+                            Explore Features →
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="preview-card">
+                        <div class="preview-header">
+                            <div class="preview-dots">
+                                <span class="preview-dot red"></span>
+                                <span class="preview-dot yellow"></span>
+                                <span class="preview-dot green"></span>
+                            </div>
+                            <span class="preview-title">Portfolio Overview</span>
+                        </div>
+                        <div class="preview-chart">
+                            <div class="chart-bar" style="height: 45px;"></div>
+                            <div class="chart-bar" style="height: 68px;"></div>
+                            <div class="chart-bar" style="height: 52px;"></div>
+                            <div class="chart-bar" style="height: 85px;"></div>
+                            <div class="chart-bar" style="height: 62px;"></div>
+                            <div class="chart-bar" style="height: 95px;"></div>
+                            <div class="chart-bar" style="height: 78px;"></div>
+                        </div>
+                        <div class="preview-assets">
+                            <div class="preview-asset">
+                                <div class="asset-info">
+                                    <img src="https://assets.coingecko.com/coins/images/1/small/bitcoin.png" alt="BTC">
+                                    <div>
+                                        <div class="asset-symbol">BTC</div>
+                                        <div class="asset-name">Bitcoin</div>
+                                    </div>
+                                </div>
+                                <div class="asset-price">$87,234</div>
+                                <div class="asset-change positive">+2.4%</div>
+                            </div>
+                            <div class="preview-asset">
+                                <div class="asset-info">
+                                    <img src="https://assets.coingecko.com/coins/images/279/small/ethereum.png" alt="ETH">
+                                    <div>
+                                        <div class="asset-symbol">ETH</div>
+                                        <div class="asset-name">Ethereum</div>
+                                    </div>
+                                </div>
+                                <div class="asset-price">$3,245</div>
+                                <div class="asset-change positive">+1.8%</div>
+                            </div>
+                            <div class="preview-asset">
+                                <div class="asset-info">
+                                    <img src="https://assets.coingecko.com/coins/images/4128/small/solana.png" alt="SOL">
+                                    <div>
+                                        <div class="asset-symbol">SOL</div>
+                                        <div class="asset-name">Solana</div>
+                                    </div>
+                                </div>
+                                <div class="asset-price">$187.30</div>
+                                <div class="asset-change negative">-0.5%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Trust Section -->
+    <section class="trust-section">
+        <div class="landing-container">
+            <div class="trust-grid">
+                <div class="trust-item">
+                    <h3>Real-Time</h3>
+                    <p>Live price data from Bybit WebSocket</p>
+                </div>
+                <div class="trust-item">
+                    <h3>Professional</h3>
+                    <p>Built for serious crypto traders</p>
+                </div>
+                <div class="trust-item">
+                    <h3>Secure</h3>
+                    <p>Your data stays private and encrypted</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="landing-footer">
+        <div class="landing-container">
+            <div class="footer-wrapper">
+                <div class="footer-brand">
+                    <img src="assets/icons/envy-emblem.svg" alt="ENVY" id="siteEmblem">
+                    <span class="footer-copyright">© 2024 ENVY. All rights reserved.</span>
+                </div>
+                <div class="footer-links">
+                    <a href="features.html">Features</a>
+                    <a href="how-it-works.html">How It Works</a>
+                    <a href="about.html">About</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script type="module">
+        import { emblemLoader } from './js/emblem-loader.js';
+        document.addEventListener('DOMContentLoaded', async () => {
+            await emblemLoader.loadSiteEmblem();
+        });
+    </script>
+</body>
+</html>

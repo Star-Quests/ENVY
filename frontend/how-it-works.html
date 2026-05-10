@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works | ENVY</title>
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0A0A0A;
+            color: #FFFFFF;
+        }
+        
+        .how-page {
+            min-height: 100vh;
+            padding: 120px 2rem 4rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .how-page h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: #FFFFFF;
+        }
+        
+        .how-page .subtitle {
+            text-align: center;
+            color: #A1A1A6;
+            margin-bottom: 4rem;
+            font-size: 1.2rem;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #9CA3AF 0%, #E5E7EB 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .steps-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .step-item {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem;
+            border-radius: 20px;
+            background: rgba(17, 17, 17, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(156, 163, 175, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .step-item:hover {
+            transform: translateX(8px);
+            border-color: #9CA3AF;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #9CA3AF, #E5E7EB);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0A0A0A;
+            flex-shrink: 0;
+        }
+        
+        .step-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: #E5E7EB;
+        }
+        
+        .step-content p {
+            color: #A1A1A6;
+            line-height: 1.7;
+        }
+        
+        /* Navigation */
+        .landing-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(156, 163, 175, 0.1);
+        }
+        
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+        
+        .nav-brand img {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+        }
+        
+        .nav-brand span {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #9CA3AF, #E5E7EB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: #A1A1A6;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #E5E7EB;
+        }
+        
+        .nav-links .launch-btn {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, #9CA3AF, #E5E7EB);
+            border-radius: 9999px;
+            color: #0A0A0A !important;
+            font-weight: 600;
+        }
+        
+        /* Background */
+        .luxury-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            overflow: hidden;
+            background: #0A0A0A;
+        }
+        
+        .gradient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+        }
+        
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, #9CA3AF 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+        }
+        
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #6B7280 0%, transparent 70%);
+            bottom: -150px;
+            left: -150px;
+        }
+        
+        @media (max-width: 768px) {
+            .step-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .step-number {
+                margin: 0 auto;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .how-page h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="luxury-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+    </div>
+    
+    <nav class="landing-nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <img src="assets/icons/envy-emblem.svg" alt="ENVY" id="siteEmblem">
+                <span>ENVY</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="features.html">Features</a>
+                <a href="how-it-works.html" class="active">How It Works</a>
+                <a href="about.html">About</a>
+                <a href="auth.html" class="launch-btn">Launch App</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="how-page">
+        <h1>How <span style="background: linear-gradient(135deg, #9CA3AF 0%, #E5E7EB 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: inline-block;">ENVY</span> Works</h1>
+        <p class="subtitle">Three simple steps to professional trade journaling</p>
+        
+        <div class="steps-vertical">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Connect & Track</h3>
+                    <p>Create your free account in seconds. ENVY connects directly to Bybit's live market data via WebSocket, giving you real-time prices for over 450 cryptocurrencies. Select your favorite assets and watch your portfolio come alive.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Journal Every Trade</h3>
+                    <p>Log your spot and futures trades with precision. Enter your entry price, amount, and fees. Each trade gets its own independent timer that runs until you close the position. Monitor real-time P&L as the market moves.</p>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Analyze & Improve</h3>
+                    <p>Review your performance with comprehensive analytics. Track win rate, profit factor, and trade duration. Use the mathematical planner to calculate optimal entries before your next trade. Master your strategy through data.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script type="module">
+        import { emblemLoader } from './js/emblem-loader.js';
+        document.addEventListener('DOMContentLoaded', async () => {
+            await emblemLoader.loadSiteEmblem();
+        });
+    </script>
+</body>
+</html>

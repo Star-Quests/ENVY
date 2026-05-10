@@ -1,0 +1,131 @@
+<!-- Connection Status Component -->
+<div class="connection-status-widget" id="connectionStatusWidget">
+    <div class="status-indicator-wrapper">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-text" id="statusText">Connected</span>
+    </div>
+    <div class="status-details">
+        <span class="latency" id="latencyDisplay">--</span>
+        <span class="server-time" id="serverTime"></span>
+    </div>
+</div>
+
+<style>
+.connection-status-widget {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--glass-bg);
+    border-radius: var(--radius-full);
+    font-size: 12px;
+}
+
+.status-indicator-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+}
+
+.status-dot.connected {
+    background: var(--success);
+    animation: pulse-connected 2s ease-in-out infinite;
+}
+
+.status-dot.connecting {
+    background: var(--warning);
+    animation: pulse-connecting 1s ease-in-out infinite;
+}
+
+.status-dot.disconnected {
+    background: var(--error);
+    animation: pulse-disconnected 1.5s ease-in-out infinite;
+}
+
+.status-text {
+    color: var(--accent-secondary);
+}
+
+.status-details {
+    display: flex;
+    gap: var(--spacing-md);
+    color: var(--accent-muted);
+    font-family: var(--font-mono);
+}
+
+@keyframes pulse-connected {
+    0%, 100% { opacity: 1; box-shadow: 0 0 5px var(--success); }
+    50% { opacity: 0.6; box-shadow: 0 0 15px var(--success); }
+}
+
+@keyframes pulse-connecting {
+    0%, 100% { opacity: 1; box-shadow: 0 0 5px var(--warning); }
+    50% { opacity: 0.4; box-shadow: 0 0 20px var(--warning); }
+}
+
+@keyframes pulse-disconnected {
+    0%, 100% { opacity: 1; box-shadow: 0 0 5px var(--error); }
+    50% { opacity: 0.5; box-shadow: 0 0 15px var(--error); }
+}
+</style>
+
+<script>
+// Connection status component logic
+(function() {
+    const updateConnectionStatus = (status, latency = null) => {
+        const dot = document.getElementById('statusDot');
+        const text = document.getElementById('statusText');
+        const latencyDisplay = document.getElementById('latencyDisplay');
+        
+        if (!dot || !text) return;
+        
+        dot.className = 'status-dot ' + status;
+        
+        switch(status) {
+            case 'connected':
+                text.textContent = 'Connected';
+                if (latencyDisplay && latency) {
+                    latencyDisplay.textContent = latency + 'ms';
+                }
+                break;
+            case 'connecting':
+                text.textContent = 'Connecting...';
+                if (latencyDisplay) latencyDisplay.textContent = '--';
+                break;
+            case 'disconnected':
+                text.textContent = 'Disconnected';
+                if (latencyDisplay) latencyDisplay.textContent = '--';
+                break;
+        }
+    };
+    
+    // Update server time
+    const updateServerTime = () => {
+        const timeEl = document.getElementById('serverTime');
+        if (timeEl) {
+            const now = new Date();
+            timeEl.textContent = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+        }
+    };
+    
+    updateServerTime();
+    setInterval(updateServerTime, 1000);
+    
+    // Listen for connection status changes
+    window.addEventListener('connection-status-change', (e) => {
+        updateConnectionStatus(e.detail.status, e.detail.latency);
+    });
+})();
+</script>

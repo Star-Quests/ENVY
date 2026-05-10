@@ -1,0 +1,346 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+    <meta name="description" content="ENVY Dashboard - Professional Crypto Portfolio Management">
+    <meta name="theme-color" content="#0A0A0A">
+    
+    <title>Dashboard | ENVY</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Preload sidebar for faster rendering -->
+    
+
+    <!-- Chart.js for Live Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+</head>
+<body class="dark-theme" data-page="dashboard">
+    <!-- Animated Background -->
+    <div class="luxury-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+        <div class="noise-overlay"></div>
+    </div>
+    
+    <!-- Connection Status Bar -->
+    <div class="connection-bar" id="connectionBar">
+        <div class="connection-indicator" id="connectionIndicator">
+            <span class="connection-dot"></span>
+            <span class="connection-text">Connected</span>
+        </div>
+        <div class="connection-time" id="connectionTime">
+            <span class="live-badge">● LIVE</span>
+        </div>
+    </div>
+    
+    <!-- Main App Container -->
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar glass-morphism" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-wrapper">
+                    <img src="assets/icons/envy-emblem.svg" alt="ENVY" class="brand-emblem pulse-glow" id="siteEmblem">
+                    <span class="brand-text" id="brandText">ENVY</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item active">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M3 12L5 10M5 10L12 3L19 10M5 10V20H9V14H15V20H19V10M19 10L21 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="journal.html" class="nav-item">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 8V12L15 15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span class="nav-text">Journal</span>
+                </a>
+                <a href="planner.html" class="nav-item">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 7H7V9H9V7Z M13 7H11V9H13V7Z M17 7H15V9H17V7Z M9 11H7V13H9V11Z M13 11H11V13H13V11Z M17 11H15V13H17V11Z M9 15H7V17H9V15Z M13 15H11V17H13V15Z M17 15H15V17H17V15Z M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3Z" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span class="nav-text">Planner</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M19.4 15C18.9 16.1 18.1 17 17.2 17.6L19 20.5C19.2 20.8 19.1 21.2 18.8 21.4C18.6 21.5 18.4 21.6 18.1 21.6C18 21.6 17.9 21.6 17.8 21.5L15 20C14.1 20.3 13.1 20.5 12 20.5C10.9 20.5 9.9 20.3 9 20L6.2 21.5C6.1 21.6 6 21.6 5.9 21.6C5.6 21.6 5.4 21.5 5.2 21.4C4.9 21.2 4.8 20.8 5 20.5L6.8 17.6C5.9 17 5.1 16.1 4.6 15C4.1 13.9 3.9 12.8 3.9 11.6C3.9 10.4 4.2 9.3 4.7 8.2C5.2 7.1 5.9 6.1 6.8 5.4L5.1 2.7C4.9 2.4 5 2 5.3 1.8C5.5 1.7 5.8 1.6 6 1.6C6.1 1.6 6.2 1.6 6.3 1.7L9 3.2C9.9 2.9 10.9 2.7 12 2.7C13.1 2.7 14.1 2.9 15 3.2L17.7 1.7C17.8 1.6 17.9 1.6 18.1 1.6C18.4 1.6 18.6 1.7 18.8 1.8C19.1 2 19.2 2.4 19 2.7L17.2 5.5C18.1 6.1 18.9 7.1 19.4 8.2C19.9 9.3 20.1 10.4 20.1 11.6C20.1 12.8 19.8 13.9 19.4 15Z" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span class="nav-text">Settings</span>
+                </a>
+                <div class="nav-divider"></div>
+                <a href="admin.html" class="nav-item" id="adminLink" style="display: none;">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 15V19M12 5V9M8 8L5 5M16 8L19 5M8 16L5 19M16 16L19 19M3 12H7M17 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span class="nav-text">Admin</span>
+                </a>
+                <a href="#" class="nav-item logout-item" id="logoutBtn">
+                    <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9M16 17L21 12M21 12L16 7M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="nav-text">Logout</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-profile" id="userProfile">
+                    <img src="assets/icons/user-avatar.svg" alt="User" class="user-avatar" id="userAvatar">
+                    <div class="user-info">
+                        <div class="user-name-wrapper">
+                            <span class="user-name" id="userName">Trader</span>
+                            <span class="user-emblem" id="userEmblem">👤</span>
+                        </div>
+                        <span class="user-greeting" id="userGreeting">Good morning</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="main-content" id="mainContent">
+            <!-- Dashboard Header -->
+            <header class="dashboard-header glass-morphism">
+                <div class="header-left">
+                    
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <h1 class="page-title">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <div class="market-status">
+                        <span class="status-indicator"></span>
+                        <span>Market Open</span>
+                    </div>
+                    <button class="notification-btn glass-morphism" id="notificationBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <span class="notification-badge" id="notificationBadge">3</span>
+                    </button>
+                    <div class="header-time" id="headerTime"></div>
+                </div>
+            </header>
+            
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Portfolio Summary Cards -->
+                <div class="summary-grid">
+                    <div class="summary-card glass-morphism">
+                        <div class="card-header">
+                            <span class="card-title">Total Capital</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 12H21M12 3V21M4 4L20 20M20 4L4 20" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <div class="card-value" id="totalCapital">$0.00</div>
+                        <div class="card-footer">
+                            <span class="trend-indicator">All-time invested</span>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-card glass-morphism">
+                        <div class="card-header">
+                            <span class="card-title">Current Balance</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 2V22M17 5H9.5C8.5 5 7.5 5.5 7.5 7C7.5 8.5 8.5 9 9.5 9H14.5C15.5 9 16.5 9.5 16.5 11C16.5 12.5 15.5 13 14.5 13H6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="card-value" id="currentBalance">$0.00</div>
+                        <div class="card-footer">
+                            <span class="trend-indicator" id="balanceChange">+0.00%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-card glass-morphism">
+                        <div class="card-header">
+                            <span class="card-title">Total Profit</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 19V5M12 5L16 9M12 5L8 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="card-value positive" id="totalProfit">$0.00</div>
+                        <div class="card-footer">
+                            <span class="trend-indicator positive" id="profitPercentage">+0.00%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-card glass-morphism">
+                        <div class="card-header">
+                            <span class="card-title">Total Loss</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 5V19M12 19L16 15M12 19L8 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="card-value negative" id="totalLoss">$0.00</div>
+                        <div class="card-footer">
+                            <span class="trend-indicator negative" id="lossPercentage">-0.00%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Live Crypto Feed -->
+                <div class="crypto-feed-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Live Market Feed</h2>
+                        <button class="edit-assets-btn glass-morphism" id="editAssetsBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M18.5 2.5C19.3284 1.67157 20.6716 1.67157 21.5 2.5C22.3284 3.32843 22.3284 4.67157 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                            Edit Assets
+                        </button>
+                    </div>
+                    <div class="crypto-feed-grid" id="cryptoFeed"></div>
+                </div>
+                
+                <!-- Portfolio Chart -->
+                <div class="portfolio-chart-section">
+                    <div class="chart-container glass-morphism">
+                        <div class="chart-header">
+                            <h3>Portfolio Performance</h3>
+                            <div class="chart-controls">
+                                <button class="time-btn active" data-period="1D">1D</button>
+                                <button class="time-btn" data-period="1W">1W</button>
+                                <button class="time-btn" data-period="1M">1M</button>
+                                <button class="time-btn" data-period="3M">3M</button>
+                                <button class="time-btn" data-period="1Y">1Y</button>
+                                <button class="time-btn" data-period="ALL">ALL</button>
+                            </div>
+                        </div>
+                        <canvas id="portfolioChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Holdings Section -->
+                <div class="holdings-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Holdings</h2>
+                        <div class="holdings-controls">
+                            <select class="sort-select glass-morphism" id="holdingsSort">
+                                <option value="highest_value">Highest Value</option>
+                                <option value="highest_profit">Highest Profit</option>
+                                <option value="highest_loss">Highest Loss</option>
+                                <option value="alphabetical">Alphabetical</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="holdings-table-wrapper glass-morphism">
+                        <table class="holdings-table" id="holdingsTable">
+                            <thead>
+                                <tr>
+                                    <th>Asset</th>
+                                    <th>Amount</th>
+                                    <th>Avg Cost</th>
+                                    <th>Price</th>
+                                    <th>P/L</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody id="holdingsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Recent Trades Section -->
+                <div class="recent-trades-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Recent Trades</h2>
+                        <a href="journal.html" class="view-all-link">View All →</a>
+                    </div>
+                    <div class="trades-table-wrapper glass-morphism">
+                        <table class="trades-table" id="recentTradesTable">
+                            <thead>
+                                <tr>
+                                    <th>Asset</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Entry</th>
+                                    <th>Exit</th>
+                                    <th>P/L</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentTradesBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Asset Edit Modal -->
+    <div class="modal" id="assetEditModal">
+        <div class="modal-content glass-morphism">
+            <div class="modal-header">
+                <h3>Edit Tracked Assets</h3>
+                <button class="modal-close" id="closeAssetModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="asset-search">
+                    <input type="text" id="assetSearchInput" placeholder="Search for any crypto..." class="glass-morphism">
+                </div>
+                <div class="selected-assets" id="selectedAssetsList"></div>
+                <div class="asset-suggestions" id="assetSuggestionsList"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelAssetEdit">Cancel</button>
+                <button class="btn-primary" id="saveAssetEdit">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification Panel -->
+    <div class="notification-panel glass-morphism" id="notificationPanel" style="display: none;">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <button class="clear-notifications" id="clearNotifications">Clear All</button>
+        </div>
+        <div class="notification-list" id="notificationList"></div>
+    </div>
+    
+    <!-- Scripts -->
+    <script type="module">
+        import { ENVYConfig } from './js/config.js';
+        import { supabase } from './js/supabase-client.js';
+    </script>
+    <script type="module" src="js/config.js"></script>
+    <script type="module" src="js/supabase-client.js"></script>
+    <script type="module" src="js/connection-monitor.js"></script>
+    <script type="module" src="js/notifications.js"></script>
+    <script type="module" src="js/dashboard.js"></script>
+    <script type="module" src="js/global.js"></script>
+<!-- Emblem Loader -->
+<script type="module">
+    import { emblemLoader } from './js/emblem-loader.js';
+    document.addEventListener('DOMContentLoaded', async () => {
+        await emblemLoader.loadSiteEmblem();
+    });
+</script>
+</body>
+</html>
