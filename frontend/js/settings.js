@@ -757,7 +757,7 @@ async saveSidebarPreference(collapsed) {
         uploadBtn.innerHTML = '<span class="spinner"></span> Uploading...';
         
         try {
-            const response = await fetch(`${ENVYConfig.API_BASE_URL}/upload/avatar`, {
+            const response = await fetch(`/api/upload/avatar`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${session.access_token}`
