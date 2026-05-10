@@ -926,7 +926,7 @@ const { count: recentCount } = await supabase
     }
     
     try {
-        const response = await fetch(`${ENVYConfig.API_BASE_URL}/upload/emblem`, {
+        const response = await fetch(`/api/upload/emblem`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${session.access_token}`
