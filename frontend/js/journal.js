@@ -416,17 +416,17 @@ if (linkedBuySelect) {
     }
     
     setTradeType(type) {
-        const buyBtn = document.getElementById('buyTypeBtn');
-        const sellBtn = document.getElementById('sellTypeBtn');
-        
-        if (type === 'buy') {
-            buyBtn.classList.add('active');
-            sellBtn.classList.remove('active');
-        } else {
-            sellBtn.classList.add('active');
-            buyBtn.classList.remove('active');
-        }
+    const buyBtn = document.getElementById('buyTypeBtn');
+    const sellBtn = document.getElementById('sellTypeBtn');
+    
+    if (type === 'buy') {
+        buyBtn.classList.add('active');
+        if (sellBtn) sellBtn.classList.remove('active');
+    } else {
+        if (sellBtn) sellBtn.classList.add('active');
+        buyBtn.classList.remove('active');
     }
+}
 
     updateAmountSuffix() {
         const asset = this.selectedAsset;
