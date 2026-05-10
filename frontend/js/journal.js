@@ -259,10 +259,13 @@ class JournalManager {
     document.getElementById('priceInput').placeholder = '0.00';
 });
 
-document.getElementById('sellTypeBtn').addEventListener('click', () => {
-    this.setTradeType('buy');
-    notificationSystem.info('💡 To close: View Details → Edit Trade → Advanced Options → Exit Price → Update Trade');
-});
+const sellBtn = document.getElementById('sellTypeBtn');
+if (sellBtn) {
+    sellBtn.addEventListener('click', () => {
+        this.setTradeType('buy');
+        notificationSystem.info('💡 To close: View Details → Edit Trade → Advanced Options → Exit Price → Update Trade');
+    });
+}
         
         document.getElementById('toggleAdvancedBtn').addEventListener('click', () => {
             const advancedFields = document.getElementById('advancedFields');
