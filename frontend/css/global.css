@@ -1781,65 +1781,52 @@ button.primary,
 }
 
 /* ============================================ */
-/* UNIVERSAL RESPONSIVE SYSTEM - ALL DEVICES    */
+/* INTELLIGENT RESPONSIVE SYSTEM v2             */
+/* Perfect on ALL devices, ALL orientations     */
 /* ============================================ */
 
-/* Prevent horizontal scroll everywhere */
-html, body {
+/* CORE: Prevent any overflow */
+html {
     overflow-x: hidden !important;
     width: 100% !important;
-    max-width: 100vw !important;
 }
 
-* {
-    max-width: 100vw;
+body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    min-height: 100vh;
+    min-height: 100dvh;
 }
 
-/* Ensure all containers respect screen width */
-.app-container,
-.main-content,
-.dashboard-content,
-.journal-content,
-.planner-content,
-.settings-content,
-.admin-content {
+.app-container {
+    display: flex;
     width: 100% !important;
     max-width: 100vw !important;
     overflow-x: hidden !important;
-    padding-left: max(1rem, env(safe-area-inset-left)) !important;
-    padding-right: max(1rem, env(safe-area-inset-right)) !important;
 }
 
-/* Responsive tables - horizontal scroll on mobile */
-.holdings-table-wrapper,
-.trades-table-wrapper,
-.trades-table-container,
-.users-table-wrapper,
-.logs-table-wrapper,
-.table-wrapper {
+.main-content {
+    flex: 1;
+    min-width: 0;
     width: 100% !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+    overflow-x: hidden !important;
 }
 
-table {
-    min-width: 100%;
-    width: max-content;
-}
+/* ============================================ */
+/* SIDEBAR - Works on all screens               */
+/* ============================================ */
 
-/* Sidebar - responsive */
 .sidebar {
-    width: 280px;
-    transition: transform 0.2s ease, width 0.2s ease;
+    width: 260px;
+    flex-shrink: 0;
+    transition: transform 0.25s ease, width 0.25s ease;
+}
+
+.sidebar.collapsed {
+    width: 70px;
 }
 
 @media (max-width: 1024px) {
-    .sidebar {
-        width: 240px;
-    }
-}
-
-@media (max-width: 768px) {
     .sidebar {
         position: fixed;
         top: 28px;
@@ -1852,68 +1839,53 @@ table {
     
     .sidebar.mobile-open {
         transform: translateX(0);
+        box-shadow: 0 0 40px rgba(0,0,0,0.5);
     }
     
     .main-content {
         width: 100% !important;
+        max-width: 100% !important;
         margin-left: 0 !important;
-        padding: 0.75rem !important;
     }
 }
 
-/* Summary cards grid */
+/* ============================================ */
+/* GRID SYSTEMS - Auto-adapting                 */
+/* ============================================ */
+
+/* Summary Cards */
 .summary-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
 }
 
-@media (max-width: 1200px) {
-    .summary-grid { grid-template-columns: repeat(3, 1fr); }
-}
+@media (max-width: 1300px) { .summary-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px)  { .summary-grid { grid-template-columns: 1fr; } }
 
-@media (max-width: 900px) {
-    .summary-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 550px) {
-    .summary-grid { grid-template-columns: 1fr; }
-}
-
-/* Crypto feed grid */
+/* Crypto Feed */
 .crypto-feed-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1rem;
 }
 
-@media (max-width: 400px) {
-    .crypto-feed-grid {
-        grid-template-columns: 1fr;
-    }
+@media (max-width: 700px) {
+    .crypto-feed-grid { grid-template-columns: 1fr; }
 }
 
-/* Planner grid */
-.planner-grid {
-    display: grid;
-    grid-template-columns: 380px 1fr;
-    gap: 1.5rem;
-}
-
-@media (max-width: 1024px) {
-    .planner-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Stats grid */
+/* Stats Grid */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1rem;
 }
 
-/* Charts row */
+@media (max-width: 500px) {
+    .stats-grid { grid-template-columns: 1fr; }
+}
+
+/* Charts Row */
 .charts-row {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -1921,69 +1893,113 @@ table {
 }
 
 @media (max-width: 900px) {
-    .charts-row {
-        grid-template-columns: 1fr;
-    }
+    .charts-row { grid-template-columns: 1fr; }
 }
 
-/* Chart containers */
+/* Planner Layout */
+.planner-grid {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+@media (max-width: 1100px) {
+    .planner-grid { grid-template-columns: 1fr; }
+}
+
+/* Trailing Stop Cards */
+.trailing-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 900px) {
+    .trailing-options { grid-template-columns: 1fr; }
+}
+
+/* Asset Grid in Modals */
+.assets-grid,
+.assets-grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+@media (max-width: 600px) {
+    .assets-grid,
+    .assets-grid-container { grid-template-columns: 1fr; }
+}
+
+/* Details Grid */
+.user-details-grid,
+.trade-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 550px) {
+    .user-details-grid,
+    .trade-details-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================ */
+/* TABLES - Scroll on small screens             */
+/* ============================================ */
+
+.holdings-table-wrapper,
+.trades-table-wrapper,
+.trades-table-container,
+.users-table-wrapper,
+.logs-table-wrapper,
+.table-wrapper {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    border-radius: var(--radius-xl);
+}
+
+/* ============================================ */
+/* CHARTS - Perfect sizing everywhere           */
+/* ============================================ */
+
 .chart-container {
     width: 100% !important;
     max-width: 100% !important;
+    padding: 1rem !important;
 }
 
 #portfolioChart,
 #userGrowthChart,
 #tradeActivityChart {
     width: 100% !important;
-    height: clamp(200px, 30vw, 300px) !important;
+    height: 280px !important;
 }
 
 @media (max-width: 768px) {
     #portfolioChart,
     #userGrowthChart,
-    #tradeActivityChart {
-        height: 220px !important;
-    }
+    #tradeActivityChart { height: 220px !important; }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 480px) {
     #portfolioChart,
     #userGrowthChart,
-    #tradeActivityChart {
-        height: 180px !important;
-    }
+    #tradeActivityChart { height: 190px !important; }
 }
 
-/* Settings tabs scroll */
-.settings-tabs,
-.admin-tabs {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    gap: 4px;
-    padding: 4px;
-}
+/* ============================================ */
+/* FORMS - Stack on mobile                      */
+/* ============================================ */
 
-.settings-tabs::-webkit-scrollbar,
-.admin-tabs::-webkit-scrollbar {
-    height: 0;
-}
-
-.tab-btn,
-.admin-tab {
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-/* Form rows - stack on mobile */
 .form-row {
     display: flex;
     gap: 1rem;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 650px) {
     .form-row {
         flex-direction: column;
         gap: 0.75rem;
@@ -1991,67 +2007,70 @@ table {
 }
 
 /* Trade type toggle */
-.trade-type-toggle {
-    display: flex;
-    gap: 0.5rem;
-}
-
-@media (max-width: 400px) {
+@media (max-width: 450px) {
     .trade-type-toggle {
         flex-direction: column;
     }
 }
 
-/* Modal responsive */
-.modal-content {
-    width: 90%;
-    max-width: 550px;
-    max-height: 85vh;
-    overflow-y: auto;
-}
+/* ============================================ */
+/* HEADER - Adaptive                            */
+/* ============================================ */
 
-@media (max-width: 500px) {
-    .modal-content {
-        width: 95%;
-        max-width: 95%;
-        margin: 10px;
-        border-radius: 16px;
-    }
-    
-    .modal-large {
-        max-width: 95% !important;
-    }
-}
-
-/* Header responsive */
 .dashboard-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 0.75rem;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 1.2rem;
 }
 
-@media (max-width: 500px) {
-    .page-title {
-        font-size: 20px !important;
+@media (max-width: 550px) {
+    .page-title { font-size: 20px !important; }
+    .header-time { display: none; }
+    .market-status { font-size: 12px; padding: 4px 10px; }
+}
+
+/* ============================================ */
+/* MODALS - Never overflow screen               */
+/* ============================================ */
+
+.modal {
+    padding: 1rem;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 550px;
+    max-height: 85vh;
+    max-height: 85dvh;
+    overflow-y: auto;
+}
+
+.modal-large {
+    max-width: 700px !important;
+}
+
+@media (max-width: 600px) {
+    .modal-content {
+        max-width: 100% !important;
+        border-radius: 16px 16px 0 0;
     }
     
-    .header-time {
-        display: none;
-    }
-    
-    .header-right {
-        width: 100%;
-        justify-content: flex-end;
+    .modal-large {
+        max-width: 100% !important;
     }
 }
 
-/* Settings panels */
+/* ============================================ */
+/* SETTINGS ITEMS - Vertical on mobile          */
+/* ============================================ */
+
 .setting-item {
     display: flex;
     gap: 1.5rem;
+    align-items: flex-start;
 }
 
 @media (max-width: 700px) {
@@ -2061,50 +2080,108 @@ table {
     }
 }
 
-/* Trailing stop cards */
-.trailing-options {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+/* ============================================ */
+/* TABS - Horizontal scroll                     */
+/* ============================================ */
+
+.settings-tabs,
+.admin-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 4px;
+    padding: 4px;
+    scrollbar-width: none;
 }
 
-@media (max-width: 800px) {
-    .trailing-options {
-        grid-template-columns: 1fr;
-    }
+.settings-tabs::-webkit-scrollbar,
+.admin-tabs::-webkit-scrollbar {
+    display: none;
 }
 
-/* User details grid */
-.user-details-grid,
-.trade-details-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-}
-
-@media (max-width: 500px) {
-    .user-details-grid,
-    .trade-details-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Asset grid in modals */
-.assets-grid,
-.assets-grid-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+.tab-btn,
+.admin-tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 10px 16px;
 }
 
 @media (max-width: 500px) {
-    .assets-grid,
-    .assets-grid-container {
-        grid-template-columns: 1fr;
+    .tab-btn,
+    .admin-tab {
+        padding: 8px 12px;
+        font-size: 13px;
     }
 }
 
-/* Prevent zoom on iOS inputs */
+/* ============================================ */
+/* TYPOGRAPHY - Scales with screen             */
+/* ============================================ */
+
+@media (max-width: 400px) {
+    .card-value { font-size: 22px !important; }
+    .crypto-price { font-size: 18px !important; }
+    .page-title { font-size: 18px !important; }
+    h2 { font-size: 16px !important; }
+}
+
+/* ============================================ */
+/* CARDS - Compact on small screens             */
+/* ============================================ */
+
+@media (max-width: 500px) {
+    .summary-card { padding: 0.75rem !important; }
+    .crypto-card { padding: 0.75rem !important; }
+    .stat-card { padding: 0.75rem !important; }
+    .trailing-card { padding: 0.75rem !important; }
+    .panel-section { padding: 1rem !important; }
+}
+
+/* ============================================ */
+/* TOUCH DEVICES - Bigger hit targets           */
+/* ============================================ */
+
+@media (hover: none) and (pointer: coarse) {
+    button,
+    .nav-item,
+    .action-btn,
+    .tab-btn,
+    .admin-tab,
+    .type-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .action-btn {
+        width: 36px !important;
+        height: 36px !important;
+    }
+}
+
+/* ============================================ */
+/* IPHONE NOTCH / DYNAMIC ISLAND               */
+/* ============================================ */
+
+.connection-bar {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+    padding-top: env(safe-area-inset-top);
+}
+
+.sidebar {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.main-content {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+/* ============================================ */
+/* PREVENT IOS ZOOM ON INPUT                    */
+/* ============================================ */
+
 @media (max-width: 768px) {
     input[type="text"],
     input[type="email"],
@@ -2117,60 +2194,49 @@ table {
     }
 }
 
-/* Notch/island support for iPhones */
-.connection-bar {
-    padding-left: max(20px, env(safe-area-inset-left));
-    padding-right: max(20px, env(safe-area-inset-right));
+/* ============================================ */
+/* TABLET LANDSCAPE - Perfect layout            */
+/* ============================================ */
+
+@media (min-width: 769px) and (max-width: 1200px) and (orientation: landscape) {
+    .sidebar { width: 240px; }
+    .main-content { padding: 1rem 1.5rem; }
+    .summary-grid { grid-template-columns: repeat(3, 1fr); }
+    .crypto-feed-grid { grid-template-columns: repeat(2, 1fr); }
+    .planner-grid { grid-template-columns: 340px 1fr; }
 }
 
-.sidebar {
-    padding-bottom: env(safe-area-inset-bottom);
+/* ============================================ */
+/* TABLET PORTRAIT - Clean stacked layout       */
+/* ============================================ */
+
+@media (min-width: 550px) and (max-width: 900px) and (orientation: portrait) {
+    .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    .crypto-feed-grid { grid-template-columns: repeat(2, 1fr); }
+    .planner-grid { grid-template-columns: 1fr; }
 }
 
-/* Touch-friendly buttons */
-@media (hover: none) and (pointer: coarse) {
-    button,
-    .nav-item,
-    .action-btn,
-    .tab-btn,
-    .admin-tab {
-        min-height: 44px;
-        min-width: 44px;
-    }
-    
-    .action-btn {
-        width: 36px;
-        height: 36px;
-    }
+/* ============================================ */
+/* VERY SMALL PHONES                           */
+/* ============================================ */
+
+@media (max-width: 360px) {
+    :root { font-size: 14px; }
+    .page-title { font-size: 17px !important; }
+    .card-value { font-size: 20px !important; }
+    .crypto-price { font-size: 16px !important; }
+    .sidebar { width: 260px !important; }
+    .summary-card { padding: 0.6rem !important; }
+    .crypto-card { padding: 0.6rem !important; }
 }
 
-/* Foldable phones */
-@media (max-width: 300px) {
-    :root {
-        font-size: 13px;
-    }
-    
-    .sidebar {
-        width: 240px !important;
-    }
-    
-    .crypto-card {
-        padding: 0.75rem !important;
-    }
-    
-    .summary-card {
-        padding: 0.75rem !important;
-    }
-}
+/* ============================================ */
+/* LANDSCAPE PHONES - Compact                   */
+/* ============================================ */
 
-/* Landscape phone fixes */
 @media (max-height: 500px) and (orientation: landscape) {
-    .connection-bar {
-        position: relative;
-    }
-    
-    .sidebar {
-        top: 0;
-        height: 100vh;
-    }
+    .connection-bar { position: static; }
+    .dashboard-header { padding: 0.4rem 1rem; }
+    .page-title { font-size: 18px !important; }
+    #portfolioChart { height: 150px !important; }
 }
