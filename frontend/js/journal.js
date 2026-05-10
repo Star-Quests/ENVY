@@ -517,6 +517,10 @@ document.getElementById('toggleAdvancedBtn').addEventListener('click', () => {
             notificationSystem.error('Failed to add trade');
             return;
         }
+
+        if (tradeType === 'buy') {
+    await this.updateHoldings(data);
+}
         
                 console.log('🔴 SELL DEBUG - tradeType:', tradeType, 'linkedBuyId:', linkedBuyId, 'selectedLinkedBuy:', this.selectedLinkedBuy);
         
