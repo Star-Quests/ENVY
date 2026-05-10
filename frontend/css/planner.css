@@ -320,6 +320,8 @@
     position: sticky;
     top: calc(28px + var(--spacing-lg));
     height: fit-content;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
 }
 
 .results-container {
@@ -389,12 +391,14 @@
 /* Tree Layout */
 .pl-tree {
     display: flex;
-    gap: var(--spacing-xl);
+    gap: var(--spacing-md);
     margin-bottom: var(--spacing-xl);
+    flex-wrap: wrap;
 }
 
 .tree-branch {
-    flex: 1;
+    flex: 1 1 160px;
+    min-width: 160px;
     position: relative;
 }
 
@@ -458,7 +462,7 @@
 /* Position Summary */
 .position-summary {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: var(--spacing-md);
     padding: var(--spacing-lg);
     background: var(--glass-bg);
@@ -491,7 +495,7 @@
 
 .trailing-options {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: var(--spacing-md);
     margin-bottom: var(--spacing-lg);
 }
