@@ -584,13 +584,14 @@ if (sellBtn) {
         localStorage.setItem('envy_journal_update', Date.now().toString());
         
         if (this.userSettings?.auto_clear_form) {
-            this.clearForm();
-            document.getElementById('linkedBuyGroup').style.display = 'none';
-            document.getElementById('partialCloseGroup').style.display = 'none';
-        }
-        
-        this.loadTrades();
-        this.updateStatistics();
+    this.clearForm();
+}
+
+// Wait 300ms for database, then reload
+setTimeout(() => {
+    this.loadTrades();
+    this.updateStatistics();
+}, 300);
         
         if (data.status === 'open' && tradeType === 'buy') {
             this.startTradeTimer(data);
