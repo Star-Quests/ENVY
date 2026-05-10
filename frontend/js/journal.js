@@ -373,40 +373,46 @@ if (sellBtn) {
             this.logout();
         });
 
-        document.getElementById('fullCloseBtn').addEventListener('click', () => {
-            this.isPartialClose = false;
-            document.getElementById('fullCloseBtn').classList.add('active');
-            document.getElementById('partialCloseBtn').classList.remove('active');
-            this.updateAmountSuffix();
-        });
+        const fullCloseBtn = document.getElementById('fullCloseBtn');
+if (fullCloseBtn) {
+    fullCloseBtn.addEventListener('click', () => {
+        this.isPartialClose = false;
+        fullCloseBtn.classList.add('active');
+        document.getElementById('partialCloseBtn')?.classList.remove('active');
+        this.updateAmountSuffix();
+    });
+}
         
-        document.getElementById('partialCloseBtn').addEventListener('click', () => {
-            this.isPartialClose = true;
-            document.getElementById('partialCloseBtn').classList.add('active');
-            document.getElementById('fullCloseBtn').classList.remove('active');
-            this.updateAmountSuffix();
-        });
+        const partialCloseBtn = document.getElementById('partialCloseBtn');
+if (partialCloseBtn) {
+    partialCloseBtn.addEventListener('click', () => {
+        this.isPartialClose = true;
+        partialCloseBtn.classList.add('active');
+        document.getElementById('fullCloseBtn')?.classList.remove('active');
+        this.updateAmountSuffix();
+    });
+}
         
-        document.getElementById('linkedBuySelect').addEventListener('change', (e) => {
-            const tradeId = e.target.value;
-            if (tradeId) {
-                const selectedTrade = this.openBuyPositions.find(t => t.id === tradeId);
-                this.selectedLinkedBuy = selectedTrade;
-                
-                const availableAmount = selectedTrade.remaining_amount || selectedTrade.amount;
-                document.getElementById('availableAmountHint').textContent = 
-                    `Available: ${this.formatNumber(availableAmount, 8)} ${selectedTrade.asset_symbol}`;
-                
-                if (!this.isPartialClose) {
-                    document.getElementById('amountInput').value = availableAmount;
-                }
-                
-                document.getElementById('priceInput').value = selectedTrade.entry_price;
-            } else {
-                this.selectedLinkedBuy = null;
-                document.getElementById('availableAmountHint').textContent = '';
+        const linkedBuySelect = document.getElementById('linkedBuySelect');
+if (linkedBuySelect) {
+    linkedBuySelect.addEventListener('change', (e) => {
+        const tradeId = e.target.value;
+        if (tradeId) {
+            const selectedTrade = this.openBuyPositions.find(t => t.id === tradeId);
+            this.selectedLinkedBuy = selectedTrade;
+            const availableAmount = selectedTrade.remaining_amount || selectedTrade.amount;
+            document.getElementById('availableAmountHint').textContent = 
+                `Available: ${this.formatNumber(availableAmount, 8)} ${selectedTrade.asset_symbol}`;
+            if (!this.isPartialClose) {
+                document.getElementById('amountInput').value = availableAmount;
             }
-        });
+            document.getElementById('priceInput').value = selectedTrade.entry_price;
+        } else {
+            this.selectedLinkedBuy = null;
+            document.getElementById('availableAmountHint').textContent = '';
+        }
+    });
+}
     }
     
     setTradeType(type) {
