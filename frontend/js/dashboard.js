@@ -264,6 +264,7 @@ async fetchBybitPricesNow() {
         this.renderCryptoFeed();
         this.updateHoldingsWithLivePrices();
         this.updatePortfolioSummary();
+        this.updateChartLive();
     } catch (e) {
         console.error('Bybit fetch error:', e);
     }
@@ -459,259 +460,294 @@ getCoinGeckoName(symbol) {
         renderSelected();
     }
     
-        initializeChart() {
-    const canvas = document.getElementById('portfolioChart');
-    if (!canvas) return;
+            // =============================================
+    // TRADINGVIEW-STYLE PORTFOLIO CHART
+    // =============================================
     
-    const ctx = canvas.getContext('2d');
-    if (this.chart) this.chart.destroy();
-    
-    // Calculate if portfolio is in profit or loss for colors
-    const totalValue = this.calculateTotalPortfolioValue();
-    const totalCost = this.calculateTotalCost();
-    const isProfitable = totalValue >= totalCost;
-    
-    this.chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                label: 'Portfolio Value',
-                data: [],
-                borderColor: isProfitable ? '#10B981' : '#EF4444',
-                backgroundColor: isProfitable ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
-                borderWidth: 2.5,
-                fill: true,
-                tension: 0.3,
-                pointRadius: 0,
-                pointHoverRadius: 7,
-                pointHoverBackgroundColor: isProfitable ? '#10B981' : '#EF4444',
-                pointHoverBorderColor: '#0A0A0A',
-                pointHoverBorderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
+    initializeChart() {
+        const canvas = document.getElementById('portfolioChart');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        if (this.chart) this.chart.destroy();
+        
+        const totalValue = this.calculateTotalPortfolioValue();
+        const totalCost = this.calculateTotalCost();
+        const isProfitable = totalValue >= totalCost;
+        
+        this.chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    // Main price line
+                    {
+                        label: 'Portfolio',
+                        data: [],
+                        borderColor: '#9CA3AF',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        tension: 0,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#FFFFFF',
+                        pointHoverBorderColor: isProfitable ? '#10B981' : '#EF4444',
+                        pointHoverBorderWidth: 3,
+                        order: 2
+                    },
+                    // Gradient fill under line
+                    {
+                        label: 'Fill',
+                        data: [],
+                        borderColor: 'transparent',
+                        backgroundColor: isProfitable ? 'rgba(16, 185, 129, 0.10)' : 'rgba(239, 68, 68, 0.10)',
+                        borderWidth: 0,
+                        tension: 0,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 0,
+                        order: 3
+                    },
+                    // Buy markers
+                    {
+                        label: 'Buy',
+                        data: [],
+                        borderColor: '#10B981',
+                        backgroundColor: '#10B981',
+                        borderWidth: 2,
+                        tension: 0,
+                        pointRadius: 6,
+                        pointHoverRadius: 10,
+                        pointStyle: 'triangle',
+                        pointRotation: 0,
+                        showLine: false,
+                        order: 1
+                    },
+                    // Sell markers
+                    {
+                        label: 'Sell',
+                        data: [],
+                        borderColor: '#EF4444',
+                        backgroundColor: '#EF4444',
+                        borderWidth: 2,
+                        tension: 0,
+                        pointRadius: 6,
+                        pointHoverRadius: 10,
+                        pointStyle: 'triangle',
+                        pointRotation: 180,
+                        showLine: false,
+                        order: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
                     mode: 'index',
-                    intersect: false,
-                    backgroundColor: '#1A1A1A',
-                    titleColor: '#E5E7EB',
-                    bodyColor: '#D1D5DB',
-                    borderColor: '#9CA3AF',
-                    borderWidth: 1,
-                    padding: 12,
-                    callbacks: {
-                        label: (ctx) => {
-                            const value = ctx.parsed.y;
-                            return ' $' + value.toLocaleString('en-US', {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2
-                            });
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    grid: { display: false },
-                    ticks: { color: '#6B7280', maxRotation: 0, font: { size: 11 } }
+                    intersect: false
                 },
-                y: {
-                    grid: { color: 'rgba(156, 163, 175, 0.06)' },
-                    ticks: {
-                        color: '#6B7280',
-                        font: { size: 11 },
-                        callback: (value) => {
-                            return '$' + value.toLocaleString('en-US', {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2
-                            });
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1A1A1A',
+                        titleColor: '#E5E7EB',
+                        bodyColor: '#D1D5DB',
+                        borderColor: '#9CA3AF',
+                        borderWidth: 1,
+                        padding: 14,
+                        titleFont: { size: 13, weight: '600' },
+                        bodyFont: { size: 14, weight: '500' },
+                        callbacks: {
+                            label: (ctx) => {
+                                if (ctx.dataset.label === 'Buy') {
+                                    return '🟢 BUY: ' + (ctx.raw.tradeInfo || '');
+                                }
+                                if (ctx.dataset.label === 'Sell') {
+                                    return '🔴 SELL: ' + (ctx.raw.tradeInfo || '');
+                                }
+                                return ' $' + ctx.parsed.y.toLocaleString('en-US', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                });
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { 
+                            color: 'rgba(156, 163, 175, 0.06)',
+                            drawBorder: false
+                        },
+                        ticks: { 
+                            color: '#6B7280', 
+                            maxRotation: 0, 
+                            font: { size: 11 },
+                            maxTicksLimit: 8
+                        }
+                    },
+                    y: {
+                        position: 'right',
+                        grid: { 
+                            color: 'rgba(156, 163, 175, 0.06)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#6B7280',
+                            font: { size: 11 },
+                            callback: (value) => {
+                                return '$' + value.toLocaleString('en-US', {
+                                    minimumFractionDigits: 0,
+                                    maximumFractionDigits: 0
+                                });
+                            }
                         }
                     }
                 }
-            },
-            interaction: { mode: 'nearest', axis: 'x', intersect: false }
-        }
-    });
-    
-    this.loadChartData('1W');
-}
-
-async loadChartData(period) {
-    if (!this.chart) return;
-    
-    const now = new Date();
-    const labels = [];
-    const values = [];
-    
-    // Get number of data points based on period
-    let points = 7;
-    switch(period) {
-        case '1D': points = 24; break;
-        case '1W': points = 7; break;
-        case '1M': points = 30; break;
-        case '3M': points = 12; break;
-        case '1Y': points = 12; break;
-        case 'ALL': points = 24; break;
-    }
-    
-    // Get current portfolio values
-    const totalValue = this.calculateTotalPortfolioValue();
-    const totalCost = this.calculateTotalCost();
-    const isProfitable = totalValue >= totalCost;
-    
-    // Build chart data
-    for (let i = points - 1; i >= 0; i--) {
-        const date = new Date(now);
+            }
+        });
         
-        // Create labels based on period
-        if (period === '1D') {
-            date.setHours(date.getHours() - i);
-            labels.push(date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
-        } else if (period === '1W') {
-            date.setDate(date.getDate() - i);
-            labels.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
-        } else if (period === '1M') {
-            date.setDate(date.getDate() - i);
-            labels.push(date.getDate().toString());
-        } else if (period === '3M') {
-            date.setDate(date.getDate() - (i * 7));
-            labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-        } else if (period === '1Y') {
-            date.setMonth(date.getMonth() - i);
-            labels.push(date.toLocaleDateString('en-US', { month: 'short' }));
-        } else {
-            date.setMonth(date.getMonth() - (i * 2));
-            labels.push(date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }));
+        this.loadChartData('1W');
+    }
+
+    async loadChartData(period) {
+        if (!this.chart) return;
+        
+        const now = new Date();
+        const labels = [];
+        const lineData = [];
+        const fillData = [];
+        const buyMarkers = [];
+        const sellMarkers = [];
+        
+        let points = 7;
+        switch(period) {
+            case '1D': points = 24; break;
+            case '1W': points = 7; break;
+            case '1M': points = 30; break;
+            case '3M': points = 12; break;
+            case '1Y': points = 12; break;
+            case 'ALL': points = 24; break;
         }
         
-        // Calculate simulated value with realistic growth pattern
-        const progress = (points - 1 - i) / (points - 1);
-        const variation = 0.85 + (progress * 0.15) + (Math.sin(i * 0.5) * 0.05);
-        values.push(totalValue * variation);
-    }
-    
-    // Ensure last point is actual current value
-    values[values.length - 1] = totalValue;
-    
-    // Update chart
-    this.chart.data.labels = labels;
-    this.chart.data.datasets[0].data = values;
-    
-    // Update colors based on profit/loss
-    this.chart.data.datasets[0].borderColor = isProfitable ? '#10B981' : '#EF4444';
-    this.chart.data.datasets[0].backgroundColor = isProfitable ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)';
-    this.chart.data.datasets[0].pointHoverBackgroundColor = isProfitable ? '#10B981' : '#EF4444';
-    
-    this.chart.update();
-}
-
-calculateTotalPortfolioValue() {
-    return this.holdings.reduce((total, holding) => {
-        const price = this.cryptoPrices[holding.asset_symbol]?.price || 0;
-        return total + (holding.total_amount * price);
-    }, 0);
-}
-    
-    renderCryptoFeed() {
-        const c = document.getElementById('cryptoFeed');
-        if (!c) return;
-        c.innerHTML = this.favoriteAssets.map(s => {
-            const p = this.cryptoPrices[s] || { price: 0, change24h: 0, high24h: 0, low24h: 0 };
-            const ch = p.change24h || 0;
-            const cls = ch >= 0 ? 'positive' : 'negative';
-            const arrow = ch >= 0 ? '&#9650;' : '&#9660;';
-            return `
-                <div class="crypto-card glass-morphism">
-                    <div class="crypto-card-header">
-                        <img src="${this.getLogoUrl(s)}" class="crypto-logo" onerror="this.src='assets/icons/default-crypto.svg'">
-                        <div><div class="crypto-name">${s}</div><div class="crypto-symbol">${s}</div></div>
-                    </div>
-                    <div class="crypto-price">$${this.formatNumber(p.price)}</div>
-                    <div class="crypto-change ${cls}"><span>${arrow}</span> ${Math.abs(ch).toFixed(2)}%</div>
-                    <div class="crypto-details">
-                        <div><span>24h High</span><span>$${this.formatNumber(p.high24h || p.price * 1.02)}</span></div>
-                        <div><span>24h Low</span><span>$${this.formatNumber(p.low24h || p.price * 0.98)}</span></div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-    
-    async loadHoldingsData() { 
-    const { data } = await supabase.from('holdings').select('*').eq('user_id', this.user.id); 
-    this.holdings = data || []; 
-}
-    async loadHoldings() { 
-    // Always fetch fresh data from database
-    const { data } = await supabase.from('holdings').select('*').eq('user_id', this.user.id);
-    this.holdings = data || [];
-    this.renderHoldingsTable(); 
-    this.updatePortfolioSummary(); 
-}
-    
-    renderHoldingsTable() {
-    const t = document.getElementById('holdingsTableBody');
-    if (!t) return;
-    if (!this.holdings.length) { 
-        t.innerHTML = '<tr><td colspan="6" class="empty-state">No holdings</td></tr>'; 
-        return; 
-    }
-    t.innerHTML = this.holdings.map(h => {
-        const pr = this.cryptoPrices[h.asset_symbol]?.price || 0;
-        const val = h.total_amount * pr;
-        const cost = h.total_amount * h.average_cost;
-        const pl = val - cost;
-        const plPercent = cost > 0 ? ((pl / cost) * 100) : 0;
-        const cls = pl >= 0 ? 'positive' : 'negative';
-        const plSign = pl >= 0 ? '+' : '';
+        const totalValue = this.calculateTotalPortfolioValue();
+        const totalCost = this.calculateTotalCost();
+        const isProfitable = totalValue >= totalCost;
         
-        return `<tr>
-            <td><div class="asset-cell"><img src="${this.getLogoUrl(h.asset_symbol)}" class="asset-logo-small"><span>${h.asset_symbol}</span></div></td>
-            <td>${this.formatNumber(h.total_amount,8)}</td>
-            <td>$${this.formatNumber(h.average_cost)}</td>
-            <td>$${this.formatNumber(pr)}</td>
-            <td class="${cls}">${plSign}$${this.formatNumber(Math.abs(pl))}<br><small>${plSign}${plPercent.toFixed(2)}%</small></td>
-            <td>$${this.formatNumber(val)}</td>
-        </tr>`;
-    }).join('');
-}
-    
-    updateHoldingsWithLivePrices() { this.renderHoldingsTable(); }
-    
-    updatePortfolioSummary() {
-        const tv = this.holdings.reduce((s,h) => s + h.total_amount * (this.cryptoPrices[h.asset_symbol]?.price||0), 0);
-        const tc = this.holdings.reduce((s,h) => s + h.total_amount * h.average_cost, 0);
-        const pl = tv - tc;
-        const pct = tc ? (pl/tc)*100 : 0;
-        let profit = 0, loss = 0;
-        this.holdings.forEach(h => { const p = h.total_amount * ((this.cryptoPrices[h.asset_symbol]?.price||0) - h.average_cost); if (p>0) profit+=p; else loss+=Math.abs(p); });
+        // Build labels and simulated values
+        for (let i = points - 1; i >= 0; i--) {
+            const date = new Date(now);
+            
+            if (period === '1D') {
+                date.setHours(date.getHours() - i);
+                labels.push(date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
+            } else if (period === '1W') {
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
+            } else if (period === '1M') {
+                date.setDate(date.getDate() - i);
+                labels.push(date.getDate().toString());
+            } else if (period === '3M') {
+                date.setDate(date.getDate() - (i * 7));
+                labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            } else if (period === '1Y') {
+                date.setMonth(date.getMonth() - i);
+                labels.push(date.toLocaleDateString('en-US', { month: 'short' }));
+            } else {
+                date.setMonth(date.getMonth() - (i * 2));
+                labels.push(date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }));
+            }
+            
+            const progress = (points - 1 - i) / (points - 1);
+            const variation = 0.85 + (progress * 0.15) + (Math.sin(i * 0.6) * 0.04);
+            const value = totalValue * variation;
+            lineData.push(value);
+            fillData.push(value);
+        }
         
-        document.getElementById('totalCapital').textContent = `$${this.formatNumber(tc)}`;
-        document.getElementById('currentBalance').textContent = `$${this.formatNumber(tv)}`;
-        const bc = document.getElementById('balanceChange');
-        bc.textContent = `${pct>=0?'+':''}${pct.toFixed(2)}%`;
-        bc.className = `trend-indicator ${pct>=0?'positive':'negative'}`;
-        document.getElementById('totalProfit').textContent = `$${this.formatNumber(profit)}`;
-        document.getElementById('totalLoss').textContent = `$${this.formatNumber(loss)}`;
+        // Ensure last point is actual current value
+        lineData[lineData.length - 1] = totalValue;
+        fillData[fillData.length - 1] = totalValue;
+        
+        // Add buy/sell markers from trades
+        if (this.trades && this.trades.length > 0) {
+            this.trades.forEach(trade => {
+                const tradeDate = new Date(trade.created_at);
+                const daysAgo = (now - tradeDate) / (1000 * 60 * 60 * 24);
+                
+                // Only show if within the period range
+                let inRange = false;
+                if (period === '1D' && daysAgo <= 1) inRange = true;
+                else if (period === '1W' && daysAgo <= 7) inRange = true;
+                else if (period === '1M' && daysAgo <= 30) inRange = true;
+                else if (period === '3M' && daysAgo <= 90) inRange = true;
+                else if (period === '1Y' && daysAgo <= 365) inRange = true;
+                else if (period === 'ALL') inRange = true;
+                
+                if (inRange) {
+                    const markerValue = totalValue * (0.85 + (Math.random() * 0.15));
+                    const marker = {
+                        x: tradeDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                        y: markerValue,
+                        tradeInfo: `${trade.asset_symbol} ${this.formatNumber(trade.amount, 4)} @ $${this.formatNumber(trade.entry_price)}`
+                    };
+                    
+                    if (trade.trade_type === 'buy') {
+                        buyMarkers.push(marker);
+                    } else {
+                        sellMarkers.push(marker);
+                    }
+                }
+            });
+        }
+        
+        // Update chart data
+        this.chart.data.labels = labels;
+        this.chart.data.datasets[0].data = lineData;
+        this.chart.data.datasets[1].data = fillData;
+        this.chart.data.datasets[2].data = buyMarkers;
+        this.chart.data.datasets[3].data = sellMarkers;
+        
+        // Update colors
+        this.chart.data.datasets[0].borderColor = isProfitable ? '#10B981' : '#EF4444';
+        this.chart.data.datasets[1].backgroundColor = isProfitable ? 'rgba(16, 185, 129, 0.10)' : 'rgba(239, 68, 68, 0.10)';
+        this.chart.data.datasets[0].pointHoverBorderColor = isProfitable ? '#10B981' : '#EF4444';
+        
+        this.chart.update();
     }
 
-    
-    calculateTotalPortfolioValue() {
-        return this.holdings.reduce((total, holding) => {
-            const price = this.cryptoPrices[holding.asset_symbol]?.price || 0;
-            return total + (holding.total_amount * price);
-        }, 0);
+    addChartDataPoint() {
+        if (!this.chart) return;
+        
+        const totalValue = this.calculateTotalPortfolioValue();
+        const totalCost = this.calculateTotalCost();
+        const isProfitable = totalValue >= totalCost;
+        
+        const now = new Date();
+        const label = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        
+        // Keep last 50 points maximum
+        if (this.chart.data.labels.length > 50) {
+            this.chart.data.labels.shift();
+            this.chart.data.datasets[0].data.shift();
+            this.chart.data.datasets[1].data.shift();
+        }
+        
+        this.chart.data.labels.push(label);
+        this.chart.data.datasets[0].data.push(totalValue);
+        this.chart.data.datasets[1].data.push(totalValue);
+        
+        this.chart.data.datasets[0].borderColor = isProfitable ? '#10B981' : '#EF4444';
+        this.chart.data.datasets[1].backgroundColor = isProfitable ? 'rgba(16, 185, 129, 0.10)' : 'rgba(239, 68, 68, 0.10)';
+        this.chart.data.datasets[0].pointHoverBorderColor = isProfitable ? '#10B981' : '#EF4444';
+        
+        this.chart.update('none');
     }
 
-    calculateTotalCost() {
-        return this.holdings.reduce((total, holding) => {
-            return total + (holding.total_amount * holding.average_cost);
-        }, 0);
+    // Called every 5 seconds from startPricePolling
+    updateChartLive() {
+        this.addChartDataPoint();
     }
     
     async loadTradesData() { const { data } = await supabase.from('trades').select('*').eq('user_id', this.user.id).order('created_at',{ascending:false}).limit(10); this.trades = data || []; }
